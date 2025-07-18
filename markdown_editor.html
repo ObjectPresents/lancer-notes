@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Menu Bar */
+        .menu-bar {
+            background-color: #2d2d2d;
+            color: white;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 14px;
+        }
+
+        .menu-item {
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+
+        .menu-item:hover {
+            background-color: #404040;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            background-color: #e0e0e0;
+            border-bottom: 1px solid #ccc;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 4px;
+            padding-right: 12px;
+            border-right: 1px solid #ccc;
+        }
+
+        .toolbar-group:last-child {
+            border-right: none;
+        }
+
+        .toolbar-btn {
+            background-color: #f8f8f8;
+            border: 1px solid #ccc;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .toolbar-btn:hover {
+            background-color: #e8e8e8;
+            border-color: #999;
+        }
+
+        .toolbar-btn:active {
+            background-color: #d0d0d0;
+        }
+
+        .toolbar-btn.active {
+            background-color: #007acc;
+            color: white;
+            border-color: #005a9e;
+        }
+
+        /* Font controls */
+        .font-select, .font-size {
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+            background-color: white;
+        }
+
+        /* Main container */
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Editor and preview panes */
+        .editor-pane, .preview-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .pane-header {
+            background-color: #f8f8f8;
+            border-bottom: 1px solid #ddd;
+            padding: 8px 16px;
+            font-weight: bold;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .editor-textarea {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            background-color: white;
+        }
+
+        .preview-content {
+            flex: 1;
+            padding: 20px;
+            background-color: white;
+            overflow-y: auto;
+            border-left: 1px solid #ddd;
+        }
+
+        /* Splitter */
+        .splitter {
+            width: 4px;
+            background-color: #ddd;
+            cursor: col-resize;
+            position: relative;
+        }
+
+        .splitter:hover {
+            background-color: #007acc;
+        }
+
+        /* Status bar */
+        .status-bar {
+            background-color: #007acc;
+            color: white;
+            padding: 4px 16px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Markdown preview styles */
+        .preview-content h1, .preview-content h2, .preview-content h3,
+        .preview-content h4, .preview-content h5, .preview-content h6 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .preview-content h1 { font-size: 2em; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .preview-content h2 { font-size: 1.5em; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .preview-content h3 { font-size: 1.3em; }
+        .preview-content h4 { font-size: 1.1em; }
+        .preview-content h5 { font-size: 1em; }
+        .preview-content h6 { font-size: 0.9em; }
+
+        .preview-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .preview-content ul, .preview-content ol {
+            margin-bottom: 15px;
+            padding-left: 30px;
+        }
+
+        .preview-content li {
+            margin-bottom: 5px;
+        }
+
+        .preview-content code {
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .preview-content pre {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 15px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+        }
+
+        .preview-content pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .preview-content blockquote {
+            border-left: 4px solid #ddd;
+            padding-left: 20px;
+            margin: 15px 0;
+            color: #666;
+            font-style: italic;
+        }
+
+        .preview-content table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .preview-content th, .preview-content td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .preview-content th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        /* Hidden file input */
+        .hidden-file-input {
+            display: none;
+        }
+
+        /* View toggle */
+        .view-toggle {
+            display: flex;
+            gap: 2px;
+        }
+
+        .view-toggle button {
+            background-color: #f8f8f8;
+            border: 1px solid #ccc;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .view-toggle button.active {
+            background-color: #007acc;
+            color: white;
+        }
+
+        /* Single pane view */
+        .single-pane .editor-pane,
+        .single-pane .preview-pane {
+            flex: 1;
+        }
+
+        .single-pane .splitter {
+            display: none;
+        }
+
+        .editor-only .preview-pane,
+        .preview-only .editor-pane {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Bar -->
+    <div class="menu-bar">
+        <div class="menu-item" onclick="showAbout()">File</div>
+        <div class="menu-item" onclick="showEditMenu()">Edit</div>
+        <div class="menu-item" onclick="showViewMenu()">View</div>
+        <div class="menu-item" onclick="showHelp()">Help</div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="newFile()" title="New File">📄 New</button>
+            <button class="toolbar-btn" onclick="openFile()" title="Open File">📂 Open</button>
+            <button class="toolbar-btn" onclick="saveFile()" title="Save File">💾 Save</button>
+        </div>
+        
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="undo()" title="Undo">↶</button>
+            <button class="toolbar-btn" onclick="redo()" title="Redo">↷</button>
+        </div>
+        
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="insertMarkdown('**', '**')" title="Bold">B</button>
+            <button class="toolbar-btn" onclick="insertMarkdown('*', '*')" title="Italic">I</button>
+            <button class="toolbar-btn" onclick="insertMarkdown('~~', '~~')" title="Strikethrough">S̶</button>
+            <button class="toolbar-btn" onclick="insertMarkdown('`', '`')" title="Code">⟨/⟩</button>
+        </div>
+        
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="insertHeading(1)" title="Heading 1">H1</button>
+            <button class="toolbar-btn" onclick="insertHeading(2)" title="Heading 2">H2</button>
+            <button class="toolbar-btn" onclick="insertHeading(3)" title="Heading 3">H3</button>
+        </div>
+        
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="insertList('- ')" title="Bullet List">• List</button>
+            <button class="toolbar-btn" onclick="insertList('1. ')" title="Numbered List">1. List</button>
+            <button class="toolbar-btn" onclick="insertMarkdown('> ', '')" title="Quote">❝ Quote</button>
+        </div>
+        
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="insertLink()" title="Insert Link">🔗 Link</button>
+            <button class="toolbar-btn" onclick="insertImage()" title="Insert Image">🖼️ Image</button>
+            <button class="toolbar-btn" onclick="insertTable()" title="Insert Table">⊞ Table</button>
+        </div>
+        
+        <div class="toolbar-group">
+            <div class="view-toggle">
+                <button onclick="setViewMode('split')" class="active" id="split-btn">Split</button>
+                <button onclick="setViewMode('editor')" id="editor-btn">Editor</button>
+                <button onclick="setViewMode('preview')" id="preview-btn">Preview</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container" id="main-container">
+        <!-- Editor Pane -->
+        <div class="editor-pane" id="editor-pane">
+            <div class="pane-header">Markdown Editor</div>
+            <textarea class="editor-textarea" id="editor" placeholder="Start typing your markdown here...
+
+# Welcome to Markdown Editor
+
+This is a **bold** text and this is *italic* text.
+
+## Features
+- Real-time preview
+- Syntax highlighting
+- WordPad-like interface
+- File operations
+
+### Code Example
+```javascript
+function hello() {
+    console.log('Hello, World!');
+}
+```
+
+> This is a blockquote.
+
+Happy writing!"></textarea>
+        </div>
+
+        <!-- Splitter -->
+        <div class="splitter" id="splitter"></div>
+
+        <!-- Preview Pane -->
+        <div class="preview-pane" id="preview-pane">
+            <div class="pane-header">Preview</div>
+            <div class="preview-content" id="preview"></div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div id="status-left">Ready</div>
+        <div id="status-right">
+            <span id="word-count">Words: 0</span>
+            <span style="margin-left: 20px;" id="char-count">Characters: 0</span>
+            <span style="margin-left: 20px;" id="line-count">Lines: 1</span>
+        </div>
+    </div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="file-input" class="hidden-file-input" accept=".md,.txt" />
+
+    <script>
+        // Global variables for state management
+        let editor = document.getElementById('editor');
+        let preview = document.getElementById('preview');
+        let currentFile = null;
+        let undoStack = [];
+        let redoStack = [];
+        let currentViewMode = 'split';
+
+        // Initialize the editor
+        function initEditor() {
+            // Set up event listeners
+            editor.addEventListener('input', function() {
+                updatePreview();
+                updateStatusBar();
+                saveToUndoStack();
+            });
+
+            editor.addEventListener('keydown', function(e) {
+                handleKeyboardShortcuts(e);
+            });
+
+            // Set up file input listener
+            document.getElementById('file-input').addEventListener('change', handleFileSelect);
+
+            // Set up splitter functionality
+            setupSplitter();
+
+            // Initial preview update
+            updatePreview();
+            updateStatusBar();
+        }
+
+        // Markdown parsing function - converts markdown to HTML
+        function parseMarkdown(markdown) {
+            let html = markdown
+                // Headers
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                
+                // Bold and italic
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/~~(.*?)~~/g, '<del>$1</del>')
+                
+                // Code blocks
+                .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                
+                // Links
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+                
+                // Images
+                .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
+                
+                // Lists
+                .replace(/^\s*\* (.+)$/gm, '<li>$1</li>')
+                .replace(/^\s*- (.+)$/gm, '<li>$1</li>')
+                .replace(/^\s*\d+\. (.+)$/gm, '<li>$1</li>')
+                
+                // Blockquotes
+                .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+                
+                // Line breaks
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>');
+
+            // Wrap in paragraphs and fix lists
+            html = '<p>' + html + '</p>';
+            html = html.replace(/<\/p><p>(<li>.*?<\/li>)<\/p><p>/g, '<ul>$1</ul>');
+            html = html.replace(/<\/li><br><li>/g, '</li><li>');
+            
+            // Fix empty paragraphs
+            html = html.replace(/<p><\/p>/g, '');
+            html = html.replace(/<p><br><\/p>/g, '');
+
+            return html;
+        }
+
+        // Update the preview pane with parsed markdown
+        function updatePreview() {
+            const markdownText = editor.value;
+            const htmlContent = parseMarkdown(markdownText);
+            preview.innerHTML = htmlContent;
+        }
+
+        // Update the status bar with current document stats
+        function updateStatusBar() {
+            const text = editor.value;
+            const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const charCount = text.length;
+            const lineCount = text.split('\n').length;
+
+            document.getElementById('word-count').textContent = `Words: ${wordCount}`;
+            document.getElementById('char-count').textContent = `Characters: ${charCount}`;
+            document.getElementById('line-count').textContent = `Lines: ${lineCount}`;
+        }
+
+        // Handle keyboard shortcuts
+        function handleKeyboardShortcuts(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'n':
+                        e.preventDefault();
+                        newFile();
+                        break;
+                    case 'o':
+                        e.preventDefault();
+                        openFile();
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        saveFile();
+                        break;
+                    case 'z':
+                        e.preventDefault();
+                        if (e.shiftKey) {
+                            redo();
+                        } else {
+                            undo();
+                        }
+                        break;
+                    case 'b':
+                        e.preventDefault();
+                        insertMarkdown('**', '**');
+                        break;
+                    case 'i':
+                        e.preventDefault();
+                        insertMarkdown('*', '*');
+                        break;
+                }
+            }
+        }
+
+        // File operations
+        function newFile() {
+            if (editor.value.trim() && !confirm('Are you sure you want to create a new file? Unsaved changes will be lost.')) {
+                return;
+            }
+            editor.value = '';
+            currentFile = null;
+            updatePreview();
+            updateStatusBar();
+            updateStatus('New file created');
+        }
+
+        function openFile() {
+            document.getElementById('file-input').click();
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    editor.value = event.target.result;
+                    currentFile = file.name;
+                    updatePreview();
+                    updateStatusBar();
+                    updateStatus(`Opened: ${file.name}`);
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function saveFile() {
+            const content = editor.value;
+            const filename = currentFile || 'document.md';
+            
+            const blob = new Blob([content], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            updateStatus(`Saved: ${filename}`);
+        }
+
+        // Undo/Redo functionality
+        function saveToUndoStack() {
+            undoStack.push(editor.value);
+            if (undoStack.length > 50) {
+                undoStack.shift();
+            }
+            redoStack = [];
+        }
+
+        function undo() {
+            if (undoStack.length > 1) {
+                redoStack.push(undoStack.pop());
+                editor.value = undoStack[undoStack.length - 1] || '';
+                updatePreview();
+                updateStatusBar();
+            }
+        }
+
+        function redo() {
+            if (redoStack.length > 0) {
+                const redoValue = redoStack.pop();
+                undoStack.push(redoValue);
+                editor.value = redoValue;
+                updatePreview();
+                updateStatusBar();
+            }
+        }
+
+        // Markdown insertion helpers
+        function insertMarkdown(before, after) {
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const selectedText = editor.value.substring(start, end);
+            
+            const newText = before + selectedText + after;
+            editor.value = editor.value.substring(0, start) + newText + editor.value.substring(end);
+            
+            // Position cursor appropriately
+            if (selectedText) {
+                editor.selectionStart = start;
+                editor.selectionEnd = start + newText.length;
+            } else {
+                editor.selectionStart = editor.selectionEnd = start + before.length;
+            }
+            
+            editor.focus();
+            updatePreview();
+            updateStatusBar();
+        }
+
+        function insertHeading(level) {
+            const start = editor.selectionStart;
+            const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
+            const hashes = '#'.repeat(level) + ' ';
+            
+            editor.value = editor.value.substring(0, lineStart) + hashes + editor.value.substring(lineStart);
+            editor.selectionStart = editor.selectionEnd = lineStart + hashes.length;
+            editor.focus();
+            updatePreview();
+            updateStatusBar();
+        }
+
+        function insertList(prefix) {
+            const start = editor.selectionStart;
+            const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
+            
+            editor.value = editor.value.substring(0, lineStart) + prefix + editor.value.substring(lineStart);
+            editor.selectionStart = editor.selectionEnd = lineStart + prefix.length;
+            editor.focus();
+            updatePreview();
+            updateStatusBar();
+        }
+
+        function insertLink() {
+            const url = prompt('Enter URL:');
+            if (url) {
+                const text = prompt('Enter link text:') || url;
+                insertMarkdown(`[${text}](`, ')');
+            }
+        }
+
+        function insertImage() {
+            const url = prompt('Enter image URL:');
+            if (url) {
+                const alt = prompt('Enter alt text:') || 'Image';
+                insertMarkdown(`![${alt}](`, ')');
+            }
+        }
+
+        function insertTable() {
+            const table = `| Header 1 | Header 2 | Header 3 |
+|----------|----------|----------|
+| Cell 1   | Cell 2   | Cell 3   |
+| Cell 4   | Cell 5   | Cell 6   |
+`;
+            const start = editor.selectionStart;
+            editor.value = editor.value.substring(0, start) + table + editor.value.substring(start);
+            editor.selectionStart = editor.selectionEnd = start + table.length;
+            editor.focus();
+            updatePreview();
+            updateStatusBar();
+        }
+
+        // View mode management
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            const container = document.getElementById('main-container');
+            
+            // Remove all view classes
+            container.classList.remove('editor-only', 'preview-only', 'single-pane');
+            
+            // Update button states
+            document.querySelectorAll('.view-toggle button').forEach(btn => btn.classList.remove('active'));
+            
+            switch(mode) {
+                case 'editor':
+                    container.classList.add('editor-only', 'single-pane');
+                    document.getElementById('editor-btn').classList.add('active');
+                    break;
+                case 'preview':
+                    container.classList.add('preview-only', 'single-pane');
+                    document.getElementById('preview-btn').classList.add('active');
+                    break;
+                default:
+                    document.getElementById('split-btn').classList.add('active');
+                    break;
+            }
+        }
+
+        // Splitter functionality for resizing panes
+        function setupSplitter() {
+            const splitter = document.getElementById('splitter');
+            let isResizing = false;
+            
+            splitter.addEventListener('mousedown', function(e) {
+                isResizing = true;
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+                e.preventDefault();
+            });
+            
+            function handleMouseMove(e) {
+                if (!isResizing) return;
+                
+                const container = document.getElementById('main-container');
+                const containerRect = container.getBoundingClientRect();
+                const percentage = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+                
+                if (percentage > 20 && percentage < 80) {
+                    document.getElementById('editor-pane').style.flex = `0 0 ${percentage}%`;
+                    document.getElementById('preview-pane').style.flex = `0 0 ${100 - percentage}%`;
+                }
+            }
+            
+            function handleMouseUp() {
+                isResizing = false;
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+            }
+        }
+
+        // Utility functions
+        function updateStatus(message) {
+            document.getElementById('status-left').textContent = message;
+            setTimeout(() => {
+                document.getElementById('status-left').textContent = 'Ready';
+            }, 3000);
+        }
+
+        // Menu functions (placeholder implementations)
+        function showAbout() {
+            alert('Markdown Editor v1.0\nA WordPad-like markdown editor with real-time preview.');
+        }
+
+        function showEditMenu() {
+            alert('Edit menu - Use Ctrl+Z/Ctrl+Y for undo/redo, or the toolbar buttons.');
+        }
+
+        function showViewMenu() {
+            alert('View menu - Use the view toggle buttons to switch between Editor, Preview, and Split view.');
+        }
+
+        function showHelp() {
+            alert('Help:\n• Use ** for bold text\n• Use * for italic text\n• Use # for headers\n• Use - or * for lists\n• Use [text](url) for links\n• Use ![alt](url) for images');
+        }
+
+        // Initialize the editor when page loads
+        window.addEventListener('load', initEditor);
+    </script>
+</body>
+</html>
