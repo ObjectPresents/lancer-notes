@@ -468,8 +468,98 @@ Happy writing!"></textarea>
         html = html.replace(/<p><br><\/p>/g, '');
 
         return html;
+        
     }
+    // Markdown parsing function - converts markdown to HTML
+    function parseMarkdown(markdown) {
+        let html = markdown;
 
+        // Handle tables first
+        html = html.replace(/^\|(.+)\r?\n\|( *[-:]+ *\|)+.*\r?\n((\|.+\r?\n*)*)/gm, (match) => {
+            const lines = match.trim().split('\n');
+            const headerLine = lines.shift();
+            lines.shift(); // Remove separator line
+
+            // A small helper to parse inline markdown within cells
+            const parseCell = (cell) => {
+                return cell.trim()
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/~~(.*?)~~/g, '<del>$1</del>')
+                    .replace(/`([^`]+)`/g, '<code>$1</code>')
+                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+            };
+
+            const headerCells = headerLine.split('|').slice(1, -1).map(parseCell);
+            
+            let tableHtml = '<table><thead><tr>';
+            headerCells.forEach(cell => {
+                tableHtml += `<th>${cell}</th>`;
+            });
+            tableHtml += '</tr></thead><tbody>';
+
+            lines.forEach(rowStr => {
+                if (!rowStr) return;
+                const rowCells = rowStr.split('|').slice(1, -1).map(parseCell);
+                tableHtml += '<tr>';
+                rowCells.forEach(cell => {
+                    tableHtml += `<td>${cell}</td>`;
+                });
+                tableHtml += '</tr>';
+            });
+
+            tableHtml += '</tbody></table>';
+            return `\n${tableHtml}\n`; // Add newlines to help with paragraph separation
+        });
+
+        // Original parsing logic continues here...
+        html = html
+            // Headers
+            .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+            .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+            .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+            
+            // Bold, italic, etc. (will now only apply outside of tables)
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/~~(.*?)~~/g, '<del>$1</del>')
+            
+            // Code blocks
+            .replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => `<pre><code>${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`)
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            
+            // Links & Images
+            .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+            
+            // Lists
+            .replace(/^\s*\* (.+)$/gm, '<li>$1</li>')
+            .replace(/^\s*- (.+)$/gm, '<li>$1</li>')
+            .replace(/^\s*\d+\. (.+)$/gm, '<li>$1</li>')
+            
+            // Blockquotes
+            .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+            
+            // Line breaks and paragraphs
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>');
+
+        // Wrap in paragraphs and fix lists
+        html = '<p>' + html.trim() + '</p>';
+        
+        // Cleanup: Remove <p> tags that incorrectly wrap block elements like tables
+        html = html.replace(/<p>\s*(<(table|ul|ol|pre|blockquote|h[1-6]))/g, '$1');
+        html = html.replace(/(<\/(table|ul|ol|pre|blockquote|h[1-6])>)\s*<\/p>/g, '$1');
+
+        html = html.replace(/<\/p><p>(<li>.*?<\/li>)<\/p><p>/g, '<ul>$1</ul>');
+        html = html.replace(/<\/li><br><li>/g, '</li><li>');
+        
+        // Fix empty paragraphs
+        html = html.replace(/<p>\s*<\/p>/g, '');
+        html = html.replace(/<p><br><\/p>/g, '');
+
+        return html;
+    }
     // Update the preview pane with parsed markdown
     function updatePreview() {
         const markdownText = editor.value;
@@ -743,7 +833,7 @@ Happy writing!"></textarea>
 
     // Menu functions (placeholder implementations)
     function showAbout() {
-        alert('Markdown Editor v1.1\nA WordPad-like markdown editor with real-time preview.\n\nChangelogs: v1.1: Changed to new icons');
+        alert('Markdown Editor v1.2\nA WordPad-like markdown editor with real-time preview.\n\nChangelogs: \nv1.2 Fix table format not working \nv1.1: Changed to new icons');
     }
 
     function showEditMenu() {
