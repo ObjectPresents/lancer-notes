@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Editor</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <style>
         * {
             margin: 0;
@@ -89,6 +90,16 @@
             background-color: #007acc;
             color: white;
             border-color: #005a9e;
+        }
+
+        /* Styles for Google Icons */
+        .toolbar-btn .material-symbols-outlined {
+            font-size: 18px; /* Consistent icon size */
+        }
+        
+        .toolbar-btn.icon-only {
+            padding: 6px;
+            justify-content: center;
         }
 
         /* Font controls */
@@ -283,7 +294,6 @@
     </style>
 </head>
 <body>
-    <!-- Menu Bar -->
     <div class="menu-bar">
         <div class="menu-item" onclick="showAbout()">File</div>
         <div class="menu-item" onclick="showEditMenu()">Edit</div>
@@ -291,42 +301,41 @@
         <div class="menu-item" onclick="showHelp()">Help</div>
     </div>
 
-    <!-- Toolbar -->
     <div class="toolbar">
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="newFile()" title="New File">📄 New</button>
-            <button class="toolbar-btn" onclick="openFile()" title="Open File">📂 Open</button>
-            <button class="toolbar-btn" onclick="saveFile()" title="Save File">💾 Save</button>
+            <button class="toolbar-btn" onclick="newFile()" title="New File"><span class="material-symbols-outlined">note_add</span> New</button>
+            <button class="toolbar-btn" onclick="openFile()" title="Open File"><span class="material-symbols-outlined">folder_open</span> Open</button>
+            <button class="toolbar-btn" onclick="saveFile()" title="Save File"><span class="material-symbols-outlined">save</span> Save</button>
         </div>
         
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="undo()" title="Undo">↶</button>
-            <button class="toolbar-btn" onclick="redo()" title="Redo">↷</button>
+            <button class="toolbar-btn icon-only" onclick="undo()" title="Undo"><span class="material-symbols-outlined">undo</span></button>
+            <button class="toolbar-btn icon-only" onclick="redo()" title="Redo"><span class="material-symbols-outlined">redo</span></button>
         </div>
         
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="insertMarkdown('**', '**')" title="Bold">B</button>
-            <button class="toolbar-btn" onclick="insertMarkdown('*', '*')" title="Italic">I</button>
-            <button class="toolbar-btn" onclick="insertMarkdown('~~', '~~')" title="Strikethrough">S̶</button>
-            <button class="toolbar-btn" onclick="insertMarkdown('`', '`')" title="Code">⟨/⟩</button>
+            <button class="toolbar-btn icon-only" onclick="insertMarkdown('**', '**')" title="Bold"><span class="material-symbols-outlined">format_bold</span></button>
+            <button class="toolbar-btn icon-only" onclick="insertMarkdown('*', '*')" title="Italic"><span class="material-symbols-outlined">format_italic</span></button>
+            <button class="toolbar-btn icon-only" onclick="insertMarkdown('~~', '~~')" title="Strikethrough"><span class="material-symbols-outlined">strikethrough_s</span></button>
+            <button class="toolbar-btn icon-only" onclick="insertMarkdown('`', '`')" title="Code"><span class="material-symbols-outlined">code</span></button>
         </div>
         
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="insertHeading(1)" title="Heading 1">H1</button>
-            <button class="toolbar-btn" onclick="insertHeading(2)" title="Heading 2">H2</button>
-            <button class="toolbar-btn" onclick="insertHeading(3)" title="Heading 3">H3</button>
+            <button class="toolbar-btn icon-only" onclick="insertHeading(1)" title="Heading 1"><span class="material-symbols-outlined">format_h1</span></button>
+            <button class="toolbar-btn icon-only" onclick="insertHeading(2)" title="Heading 2"><span class="material-symbols-outlined">format_h2</span></button>
+            <button class="toolbar-btn icon-only" onclick="insertHeading(3)" title="Heading 3"><span class="material-symbols-outlined">format_h3</span></button>
         </div>
         
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="insertList('- ')" title="Bullet List">• List</button>
-            <button class="toolbar-btn" onclick="insertList('1. ')" title="Numbered List">1. List</button>
-            <button class="toolbar-btn" onclick="insertMarkdown('> ', '')" title="Quote">❝ Quote</button>
+            <button class="toolbar-btn" onclick="insertList('- ')" title="Bullet List"><span class="material-symbols-outlined">format_list_bulleted</span> List</button>
+            <button class="toolbar-btn" onclick="insertList('1. ')" title="Numbered List"><span class="material-symbols-outlined">format_list_numbered</span> List</button>
+            <button class="toolbar-btn" onclick="insertMarkdown('> ', '')" title="Quote"><span class="material-symbols-outlined">format_quote</span> Quote</button>
         </div>
         
         <div class="toolbar-group">
-            <button class="toolbar-btn" onclick="insertLink()" title="Insert Link">🔗 Link</button>
-            <button class="toolbar-btn" onclick="insertImage()" title="Insert Image">🖼️ Image</button>
-            <button class="toolbar-btn" onclick="insertTable()" title="Insert Table">⊞ Table</button>
+            <button class="toolbar-btn" onclick="insertLink()" title="Insert Link"><span class="material-symbols-outlined">link</span> Link</button>
+            <button class="toolbar-btn" onclick="insertImage()" title="Insert Image"><span class="material-symbols-outlined">image</span> Image</button>
+            <button class="toolbar-btn" onclick="insertTable()" title="Insert Table"><span class="material-symbols-outlined">table_chart</span> Table</button>
         </div>
         
         <div class="toolbar-group">
@@ -338,9 +347,7 @@
         </div>
     </div>
 
-    <!-- Main Container -->
     <div class="main-container" id="main-container">
-        <!-- Editor Pane -->
         <div class="editor-pane" id="editor-pane">
             <div class="pane-header">Markdown Editor</div>
             <textarea class="editor-textarea" id="editor" placeholder="Start typing your markdown here...
@@ -360,408 +367,399 @@ This is a **bold** text and this is *italic* text.
 function hello() {
     console.log('Hello, World!');
 }
-```
-
-> This is a blockquote.
+This is a blockquote.
 
 Happy writing!"></textarea>
-        </div>
+</div>
+    <div class="splitter" id="splitter"></div>
 
-        <!-- Splitter -->
-        <div class="splitter" id="splitter"></div>
-
-        <!-- Preview Pane -->
-        <div class="preview-pane" id="preview-pane">
-            <div class="pane-header">Preview</div>
-            <div class="preview-content" id="preview"></div>
-        </div>
+    <div class="preview-pane" id="preview-pane">
+        <div class="pane-header">Preview</div>
+        <div class="preview-content" id="preview"></div>
     </div>
+</div>
 
-    <!-- Status Bar -->
-    <div class="status-bar">
-        <div id="status-left">Ready</div>
-        <div id="status-right">
-            <span id="word-count">Words: 0</span>
-            <span style="margin-left: 20px;" id="char-count">Characters: 0</span>
-            <span style="margin-left: 20px;" id="line-count">Lines: 1</span>
-        </div>
+<div class="status-bar">
+    <div id="status-left">Ready</div>
+    <div id="status-right">
+        <span id="word-count">Words: 0</span>
+        <span style="margin-left: 20px;" id="char-count">Characters: 0</span>
+        <span style="margin-left: 20px;" id="line-count">Lines: 1</span>
     </div>
+</div>
 
-    <!-- Hidden file input -->
-    <input type="file" id="file-input" class="hidden-file-input" accept=".md,.txt" />
+<input type="file" id="file-input" class="hidden-file-input" accept=".md,.txt" />
 
-    <script>
-        // Global variables for state management
-        let editor = document.getElementById('editor');
-        let preview = document.getElementById('preview');
-        let currentFile = null;
-        let undoStack = [];
-        let redoStack = [];
-        let currentViewMode = 'split';
+<script>
+    // Global variables for state management
+    let editor = document.getElementById('editor');
+    let preview = document.getElementById('preview');
+    let currentFile = null;
+    let undoStack = [];
+    let redoStack = [];
+    let currentViewMode = 'split';
 
-        // Initialize the editor
-        function initEditor() {
-            // Set up event listeners
-            editor.addEventListener('input', function() {
+    // Initialize the editor
+    function initEditor() {
+        // Set up event listeners
+        editor.addEventListener('input', function() {
+            updatePreview();
+            updateStatusBar();
+            saveToUndoStack();
+        });
+
+        editor.addEventListener('keydown', function(e) {
+            handleKeyboardShortcuts(e);
+        });
+
+        // Set up file input listener
+        document.getElementById('file-input').addEventListener('change', handleFileSelect);
+
+        // Set up splitter functionality
+        setupSplitter();
+
+        // Initial preview update
+        updatePreview();
+        updateStatusBar();
+    }
+
+    // Markdown parsing function - converts markdown to HTML
+    function parseMarkdown(markdown) {
+        let html = markdown
+            // Headers
+            .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+            .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+            .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+            
+            // Bold and italic
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/~~(.*?)~~/g, '<del>$1</del>')
+            
+            // Code blocks
+            .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            
+            // Links
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+            
+            // Images
+            .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
+            
+            // Lists
+            .replace(/^\s*\* (.+)$/gm, '<li>$1</li>')
+            .replace(/^\s*- (.+)$/gm, '<li>$1</li>')
+            .replace(/^\s*\d+\. (.+)$/gm, '<li>$1</li>')
+            
+            // Blockquotes
+            .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+            
+            // Line breaks
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>');
+
+        // Wrap in paragraphs and fix lists
+        html = '<p>' + html + '</p>';
+        html = html.replace(/<\/p><p>(<li>.*?<\/li>)<\/p><p>/g, '<ul>$1</ul>');
+        html = html.replace(/<\/li><br><li>/g, '</li><li>');
+        
+        // Fix empty paragraphs
+        html = html.replace(/<p><\/p>/g, '');
+        html = html.replace(/<p><br><\/p>/g, '');
+
+        return html;
+    }
+
+    // Update the preview pane with parsed markdown
+    function updatePreview() {
+        const markdownText = editor.value;
+        const htmlContent = parseMarkdown(markdownText);
+        preview.innerHTML = htmlContent;
+    }
+
+    // Update the status bar with current document stats
+    function updateStatusBar() {
+        const text = editor.value;
+        const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+        const charCount = text.length;
+        const lineCount = text.split('\n').length;
+
+        document.getElementById('word-count').textContent = `Words: ${wordCount}`;
+        document.getElementById('char-count').textContent = `Characters: ${charCount}`;
+        document.getElementById('line-count').textContent = `Lines: ${lineCount}`;
+    }
+
+    // Handle keyboard shortcuts
+    function handleKeyboardShortcuts(e) {
+        if (e.ctrlKey || e.metaKey) {
+            switch(e.key) {
+                case 'n':
+                    e.preventDefault();
+                    newFile();
+                    break;
+                case 'o':
+                    e.preventDefault();
+                    openFile();
+                    break;
+                case 's':
+                    e.preventDefault();
+                    saveFile();
+                    break;
+                case 'z':
+                    e.preventDefault();
+                    if (e.shiftKey) {
+                        redo();
+                    } else {
+                        undo();
+                    }
+                    break;
+                case 'b':
+                    e.preventDefault();
+                    insertMarkdown('**', '**');
+                    break;
+                case 'i':
+                    e.preventDefault();
+                    insertMarkdown('*', '*');
+                    break;
+            }
+        }
+    }
+
+    // File operations
+    function newFile() {
+        if (editor.value.trim() && !confirm('Are you sure you want to create a new file? Unsaved changes will be lost.')) {
+            return;
+        }
+        editor.value = '';
+        currentFile = null;
+        updatePreview();
+        updateStatusBar();
+        updateStatus('New file created');
+    }
+
+    function openFile() {
+        document.getElementById('file-input').click();
+    }
+
+    function handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                editor.value = event.target.result;
+                currentFile = file.name;
                 updatePreview();
                 updateStatusBar();
-                saveToUndoStack();
-            });
+                updateStatus(`Opened: ${file.name}`);
+            };
+            reader.readAsText(file);
+        }
+    }
 
-            editor.addEventListener('keydown', function(e) {
-                handleKeyboardShortcuts(e);
-            });
+    function saveFile() {
+        const content = editor.value;
+        const filename = currentFile || 'document.md';
+        
+        const blob = new Blob([content], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        updateStatus(`Saved: ${filename}`);
+    }
 
-            // Set up file input listener
-            document.getElementById('file-input').addEventListener('change', handleFileSelect);
+    // Undo/Redo functionality
+    function saveToUndoStack() {
+        undoStack.push(editor.value);
+        if (undoStack.length > 50) {
+            undoStack.shift();
+        }
+        redoStack = [];
+    }
 
-            // Set up splitter functionality
-            setupSplitter();
-
-            // Initial preview update
+    function undo() {
+        if (undoStack.length > 1) {
+            redoStack.push(undoStack.pop());
+            editor.value = undoStack[undoStack.length - 1] || '';
             updatePreview();
             updateStatusBar();
         }
+    }
 
-        // Markdown parsing function - converts markdown to HTML
-        function parseMarkdown(markdown) {
-            let html = markdown
-                // Headers
-                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-                
-                // Bold and italic
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/~~(.*?)~~/g, '<del>$1</del>')
-                
-                // Code blocks
-                .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-                .replace(/`([^`]+)`/g, '<code>$1</code>')
-                
-                // Links
-                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-                
-                // Images
-                .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
-                
-                // Lists
-                .replace(/^\s*\* (.+)$/gm, '<li>$1</li>')
-                .replace(/^\s*- (.+)$/gm, '<li>$1</li>')
-                .replace(/^\s*\d+\. (.+)$/gm, '<li>$1</li>')
-                
-                // Blockquotes
-                .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-                
-                // Line breaks
-                .replace(/\n\n/g, '</p><p>')
-                .replace(/\n/g, '<br>');
-
-            // Wrap in paragraphs and fix lists
-            html = '<p>' + html + '</p>';
-            html = html.replace(/<\/p><p>(<li>.*?<\/li>)<\/p><p>/g, '<ul>$1</ul>');
-            html = html.replace(/<\/li><br><li>/g, '</li><li>');
-            
-            // Fix empty paragraphs
-            html = html.replace(/<p><\/p>/g, '');
-            html = html.replace(/<p><br><\/p>/g, '');
-
-            return html;
-        }
-
-        // Update the preview pane with parsed markdown
-        function updatePreview() {
-            const markdownText = editor.value;
-            const htmlContent = parseMarkdown(markdownText);
-            preview.innerHTML = htmlContent;
-        }
-
-        // Update the status bar with current document stats
-        function updateStatusBar() {
-            const text = editor.value;
-            const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
-            const charCount = text.length;
-            const lineCount = text.split('\n').length;
-
-            document.getElementById('word-count').textContent = `Words: ${wordCount}`;
-            document.getElementById('char-count').textContent = `Characters: ${charCount}`;
-            document.getElementById('line-count').textContent = `Lines: ${lineCount}`;
-        }
-
-        // Handle keyboard shortcuts
-        function handleKeyboardShortcuts(e) {
-            if (e.ctrlKey || e.metaKey) {
-                switch(e.key) {
-                    case 'n':
-                        e.preventDefault();
-                        newFile();
-                        break;
-                    case 'o':
-                        e.preventDefault();
-                        openFile();
-                        break;
-                    case 's':
-                        e.preventDefault();
-                        saveFile();
-                        break;
-                    case 'z':
-                        e.preventDefault();
-                        if (e.shiftKey) {
-                            redo();
-                        } else {
-                            undo();
-                        }
-                        break;
-                    case 'b':
-                        e.preventDefault();
-                        insertMarkdown('**', '**');
-                        break;
-                    case 'i':
-                        e.preventDefault();
-                        insertMarkdown('*', '*');
-                        break;
-                }
-            }
-        }
-
-        // File operations
-        function newFile() {
-            if (editor.value.trim() && !confirm('Are you sure you want to create a new file? Unsaved changes will be lost.')) {
-                return;
-            }
-            editor.value = '';
-            currentFile = null;
-            updatePreview();
-            updateStatusBar();
-            updateStatus('New file created');
-        }
-
-        function openFile() {
-            document.getElementById('file-input').click();
-        }
-
-        function handleFileSelect(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    editor.value = event.target.result;
-                    currentFile = file.name;
-                    updatePreview();
-                    updateStatusBar();
-                    updateStatus(`Opened: ${file.name}`);
-                };
-                reader.readAsText(file);
-            }
-        }
-
-        function saveFile() {
-            const content = editor.value;
-            const filename = currentFile || 'document.md';
-            
-            const blob = new Blob([content], { type: 'text/markdown' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            updateStatus(`Saved: ${filename}`);
-        }
-
-        // Undo/Redo functionality
-        function saveToUndoStack() {
-            undoStack.push(editor.value);
-            if (undoStack.length > 50) {
-                undoStack.shift();
-            }
-            redoStack = [];
-        }
-
-        function undo() {
-            if (undoStack.length > 1) {
-                redoStack.push(undoStack.pop());
-                editor.value = undoStack[undoStack.length - 1] || '';
-                updatePreview();
-                updateStatusBar();
-            }
-        }
-
-        function redo() {
-            if (redoStack.length > 0) {
-                const redoValue = redoStack.pop();
-                undoStack.push(redoValue);
-                editor.value = redoValue;
-                updatePreview();
-                updateStatusBar();
-            }
-        }
-
-        // Markdown insertion helpers
-        function insertMarkdown(before, after) {
-            const start = editor.selectionStart;
-            const end = editor.selectionEnd;
-            const selectedText = editor.value.substring(start, end);
-            
-            const newText = before + selectedText + after;
-            editor.value = editor.value.substring(0, start) + newText + editor.value.substring(end);
-            
-            // Position cursor appropriately
-            if (selectedText) {
-                editor.selectionStart = start;
-                editor.selectionEnd = start + newText.length;
-            } else {
-                editor.selectionStart = editor.selectionEnd = start + before.length;
-            }
-            
-            editor.focus();
+    function redo() {
+        if (redoStack.length > 0) {
+            const redoValue = redoStack.pop();
+            undoStack.push(redoValue);
+            editor.value = redoValue;
             updatePreview();
             updateStatusBar();
         }
+    }
 
-        function insertHeading(level) {
-            const start = editor.selectionStart;
-            const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
-            const hashes = '#'.repeat(level) + ' ';
+    // Markdown insertion helpers
+    function insertMarkdown(before, after) {
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        const selectedText = editor.value.substring(start, end);
+        
+        const newText = before + selectedText + after;
+        editor.value = editor.value.substring(0, start) + newText + editor.value.substring(end);
+        
+        // Position cursor appropriately
+        if (selectedText) {
+            editor.selectionStart = start;
+            editor.selectionEnd = start + newText.length;
+        } else {
+            editor.selectionStart = editor.selectionEnd = start + before.length;
+        }
+        
+        editor.focus();
+        updatePreview();
+        updateStatusBar();
+    }
+
+    function insertHeading(level) {
+        const start = editor.selectionStart;
+        const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
+        const hashes = '#'.repeat(level) + ' ';
+        
+        editor.value = editor.value.substring(0, lineStart) + hashes + editor.value.substring(lineStart);
+        editor.selectionStart = editor.selectionEnd = lineStart + hashes.length;
+        editor.focus();
+        updatePreview();
+        updateStatusBar();
+    }
+
+    function insertList(prefix) {
+        const start = editor.selectionStart;
+        const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
+        
+        editor.value = editor.value.substring(0, lineStart) + prefix + editor.value.substring(lineStart);
+        editor.selectionStart = editor.selectionEnd = lineStart + prefix.length;
+        editor.focus();
+        updatePreview();
+        updateStatusBar();
+    }
+
+    function insertLink() {
+        const url = prompt('Enter URL:');
+        if (url) {
+            const text = prompt('Enter link text:') || url;
+            insertMarkdown(`[${text}](${url})`, '');
+            editor.selectionStart = editor.selectionEnd = editor.selectionStart + `[${text}](${url})`.length;
+        }
+    }
+
+    function insertImage() {
+        const url = prompt('Enter image URL:');
+        if (url) {
+            const alt = prompt('Enter alt text:') || 'Image';
+            insertMarkdown(`![${alt}](${url})`, '');
+             editor.selectionStart = editor.selectionEnd = editor.selectionStart + `![${alt}](${url})`.length;
+        }
+    }
+
+    function insertTable() {
+        const table = `\n| Header 1 | Header 2 | Header 3 |\n|----------|----------|----------|\n| Cell 1   | Cell 2   | Cell 3   |\n| Cell 4   | Cell 5   | Cell 6   |\n`;
+        const start = editor.selectionStart;
+        editor.value = editor.value.substring(0, start) + table + editor.value.substring(start);
+        editor.selectionStart = editor.selectionEnd = start + table.length;
+        editor.focus();
+        updatePreview();
+        updateStatusBar();
+    }
+
+    // View mode management
+    function setViewMode(mode) {
+        currentViewMode = mode;
+        const container = document.getElementById('main-container');
+        
+        // Remove all view classes
+        container.classList.remove('editor-only', 'preview-only', 'single-pane');
+        
+        // Update button states
+        document.querySelectorAll('.view-toggle button').forEach(btn => btn.classList.remove('active'));
+        
+        switch(mode) {
+            case 'editor':
+                container.classList.add('editor-only', 'single-pane');
+                document.getElementById('editor-btn').classList.add('active');
+                break;
+            case 'preview':
+                container.classList.add('preview-only', 'single-pane');
+                document.getElementById('preview-btn').classList.add('active');
+                break;
+            default:
+                document.getElementById('split-btn').classList.add('active');
+                break;
+        }
+    }
+
+    // Splitter functionality for resizing panes
+    function setupSplitter() {
+        const splitter = document.getElementById('splitter');
+        let isResizing = false;
+        
+        splitter.addEventListener('mousedown', function(e) {
+            isResizing = true;
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            e.preventDefault();
+        });
+        
+        function handleMouseMove(e) {
+            if (!isResizing) return;
             
-            editor.value = editor.value.substring(0, lineStart) + hashes + editor.value.substring(lineStart);
-            editor.selectionStart = editor.selectionEnd = lineStart + hashes.length;
-            editor.focus();
-            updatePreview();
-            updateStatusBar();
-        }
-
-        function insertList(prefix) {
-            const start = editor.selectionStart;
-            const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
-            
-            editor.value = editor.value.substring(0, lineStart) + prefix + editor.value.substring(lineStart);
-            editor.selectionStart = editor.selectionEnd = lineStart + prefix.length;
-            editor.focus();
-            updatePreview();
-            updateStatusBar();
-        }
-
-        function insertLink() {
-            const url = prompt('Enter URL:');
-            if (url) {
-                const text = prompt('Enter link text:') || url;
-                insertMarkdown(`[${text}](`, ')');
-            }
-        }
-
-        function insertImage() {
-            const url = prompt('Enter image URL:');
-            if (url) {
-                const alt = prompt('Enter alt text:') || 'Image';
-                insertMarkdown(`![${alt}](`, ')');
-            }
-        }
-
-        function insertTable() {
-            const table = `| Header 1 | Header 2 | Header 3 |
-|----------|----------|----------|
-| Cell 1   | Cell 2   | Cell 3   |
-| Cell 4   | Cell 5   | Cell 6   |
-`;
-            const start = editor.selectionStart;
-            editor.value = editor.value.substring(0, start) + table + editor.value.substring(start);
-            editor.selectionStart = editor.selectionEnd = start + table.length;
-            editor.focus();
-            updatePreview();
-            updateStatusBar();
-        }
-
-        // View mode management
-        function setViewMode(mode) {
-            currentViewMode = mode;
             const container = document.getElementById('main-container');
+            const containerRect = container.getBoundingClientRect();
+            const percentage = ((e.clientX - containerRect.left) / containerRect.width) * 100;
             
-            // Remove all view classes
-            container.classList.remove('editor-only', 'preview-only', 'single-pane');
-            
-            // Update button states
-            document.querySelectorAll('.view-toggle button').forEach(btn => btn.classList.remove('active'));
-            
-            switch(mode) {
-                case 'editor':
-                    container.classList.add('editor-only', 'single-pane');
-                    document.getElementById('editor-btn').classList.add('active');
-                    break;
-                case 'preview':
-                    container.classList.add('preview-only', 'single-pane');
-                    document.getElementById('preview-btn').classList.add('active');
-                    break;
-                default:
-                    document.getElementById('split-btn').classList.add('active');
-                    break;
+            if (percentage > 20 && percentage < 80) {
+                document.getElementById('editor-pane').style.flex = `0 1 ${percentage}%`;
+                document.getElementById('preview-pane').style.flex = `1 1 ${100 - percentage}%`;
             }
         }
-
-        // Splitter functionality for resizing panes
-        function setupSplitter() {
-            const splitter = document.getElementById('splitter');
-            let isResizing = false;
-            
-            splitter.addEventListener('mousedown', function(e) {
-                isResizing = true;
-                document.addEventListener('mousemove', handleMouseMove);
-                document.addEventListener('mouseup', handleMouseUp);
-                e.preventDefault();
-            });
-            
-            function handleMouseMove(e) {
-                if (!isResizing) return;
-                
-                const container = document.getElementById('main-container');
-                const containerRect = container.getBoundingClientRect();
-                const percentage = ((e.clientX - containerRect.left) / containerRect.width) * 100;
-                
-                if (percentage > 20 && percentage < 80) {
-                    document.getElementById('editor-pane').style.flex = `0 0 ${percentage}%`;
-                    document.getElementById('preview-pane').style.flex = `0 0 ${100 - percentage}%`;
-                }
-            }
-            
-            function handleMouseUp() {
-                isResizing = false;
-                document.removeEventListener('mousemove', handleMouseMove);
-                document.removeEventListener('mouseup', handleMouseUp);
-            }
+        
+        function handleMouseUp() {
+            isResizing = false;
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
         }
+    }
 
-        // Utility functions
-        function updateStatus(message) {
-            document.getElementById('status-left').textContent = message;
-            setTimeout(() => {
-                document.getElementById('status-left').textContent = 'Ready';
-            }, 3000);
-        }
+    // Utility functions
+    function updateStatus(message) {
+        document.getElementById('status-left').textContent = message;
+        setTimeout(() => {
+            document.getElementById('status-left').textContent = 'Ready';
+        }, 3000);
+    }
 
-        // Menu functions (placeholder implementations)
-        function showAbout() {
-            alert('Markdown Editor v1.0\nA WordPad-like markdown editor with real-time preview.');
-        }
+    // Menu functions (placeholder implementations)
+    function showAbout() {
+        alert('Markdown Editor v1.1\nA WordPad-like markdown editor with real-time preview.\n\nChangelogs: v1.1: Changed to new icons');
+    }
 
-        function showEditMenu() {
-            alert('Edit menu - Use Ctrl+Z/Ctrl+Y for undo/redo, or the toolbar buttons.');
-        }
+    function showEditMenu() {
+        alert('Edit menu - Use Ctrl+Z/Ctrl+Y for undo/redo, or the toolbar buttons.');
+    }
 
-        function showViewMenu() {
-            alert('View menu - Use the view toggle buttons to switch between Editor, Preview, and Split view.');
-        }
+    function showViewMenu() {
+        alert('View menu - Use the view toggle buttons to switch between Editor, Preview, and Split view.');
+    }
 
-        function showHelp() {
-            alert('Help:\n• Use ** for bold text\n• Use * for italic text\n• Use # for headers\n• Use - or * for lists\n• Use [text](url) for links\n• Use ![alt](url) for images');
-        }
+    function showHelp() {
+        alert('Help:\n• Use ** for bold text\n• Use * for italic text\n• Use # for headers\n• Use - or * for lists\n• Use [text](url) for links\n• Use ![alt](url) for images');
+    }
 
-        // Initialize the editor when page loads
-        window.addEventListener('load', initEditor);
-    </script>
+    // Initialize the editor when page loads
+    window.addEventListener('load', initEditor);
+</script>
 </body>
 </html>
