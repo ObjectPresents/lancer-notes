@@ -6,7 +6,7 @@ Project completed by 100% solo with moderate use of AI, templates and inspriatio
 Any feedbacks can go to: @objectpresents (Discord) or objectpresents.bsky.social (Bluesky)
 
 ## Changelogs:
-#### 19/9/2025
+#### v2.0.1 (19/9/2025)
 Added support for .txt
 Fixed editor UI bug where it breaks after resizing spilt mode
 #### v2.0 (18/9/2025): 
