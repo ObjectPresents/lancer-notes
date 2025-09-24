@@ -67,6 +67,15 @@
         </div>
     </div>
 
+    <!-- Main sidebar (added) -->
+    <div id="main-sidebar" style="position:fixed;left:0;top:84px;bottom:40px;width:48px;display:flex;flex-direction:column;align-items:center;background:#f5f5f5;border-right:1px solid #e0e0e0;z-index:400;">
+        <!-- Other sidebar items could go here -->
+        <div style="flex:1;"></div>
+        <!-- Settings button placed on the right side of the sidebar -->
+        <button id="sidebar-settings-btn" title="Settings" style="align-self:flex-end;margin-right:4px;padding:6px 8px;cursor:pointer;border:0;background:transparent;font-size:16px;">⚙️</button>
+        <div style="height:8px"></div>
+    </div>
+
     <div class="main-container" id="main-container">
         <div class="editor-pane" id="editor-pane">
             <div class="pane-header">Markdown Editor</div>
@@ -115,8 +124,23 @@ Happy writing!"></textarea>
         <input id="replace-input" placeholder="Replace" style="flex:1;padding:6px;" />
         <button id="find-close" title="Close" style="padding:6px">✕</button>
     </div>
-    <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;">
-        <label style="font-size:12px;"><input type="checkbox" id="case-sensitive" /> Case sensitive</label>
+    <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <div style="display:flex;gap:10px;align-items:center;">
+            <label style="font-size:12px;"><input type="checkbox" id="case-sensitive" /> Case sensitive</label>
+            <label style="font-size:12px;"><input type="checkbox" id="use-regex" /> Regex</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;">Flags:</span>
+                <div class="flags-dropdown" style="position:relative;">
+                    <button id="flags-toggle" class="flags-toggle" aria-haspopup="true" aria-expanded="false" title="Toggle flags" style="padding:4px 8px;font-size:12px;">Flags ▾</button>
+                    <div id="flags-menu" class="flags-menu" role="menu" aria-hidden="true" style="display:none;position:absolute;right:0;top:30px;background:#fff;border:1px solid #ccc;padding:8px;box-shadow:0 2px 6px rgba(0,0,0,0.12);z-index:1000;min-width:140px;font-size:12px;">
+                        <label style="display:block;margin-bottom:6px;"><input type="checkbox" id="flag-m" data-flag="m" class="flag-checkbox" /> m (multiline)</label>
+                        <label style="display:block;margin-bottom:6px;"><input type="checkbox" id="flag-s" data-flag="s" class="flag-checkbox" /> s (dotAll)</label>
+                        <label style="display:block;margin-bottom:6px;"><input type="checkbox" id="flag-u" data-flag="u" class="flag-checkbox" /> u (unicode)</label>
+                        <label style="display:block;margin-bottom:0;"><input type="checkbox" id="flag-y" data-flag="y" class="flag-checkbox" /> y (sticky)</label>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="match-count" style="font-size:12px;">0 / 0</div>
     </div>
     <div style="margin-top:8px;display:flex;gap:6px;justify-content:flex-end;">
@@ -124,6 +148,12 @@ Happy writing!"></textarea>
         <button id="btn-find-next">Next</button>
         <button id="btn-replace">Replace</button>
         <button id="btn-replace-all">Replace All</button>
+    </div>
+    <div style="margin-top:6px;display:flex;justify-content:space-between;align-items:center;">
+        <select id="search-history" style="font-size:12px;padding:4px;min-width:180px;">
+            <option value="">Recent searches...</option>
+        </select>
+        <div style="font-size:11px;color:#666;">Hints: Use Regex for patterns</div>
     </div>
 </div>
 
@@ -138,6 +168,17 @@ Happy writing!"></textarea>
         body.dark-mode #find-replace-bar button { background:#333; color:#ddd; border:1px solid #444 }
         body.dark-mode #find-replace-bar label { color:#ccc }
         body.dark-mode #find-replace-bar #match-count { color:#bbb }
+        /* Highlight styles */
+        .md-match { background: #fffb91; color: #111; padding:0 2px; border-radius:2px; }
+        .md-match-current { background: #ffcf66; color:#111; padding:0 2px; border-radius:2px; }
+        body.dark-mode .md-match { background:#3a3a2a; color:#fff }
+        body.dark-mode .md-match-current { background:#5a4b1a; color:#fff }
+        .find-transition { transition: background-color 180ms ease; }
+    /* Flags dropdown styles */
+    .flags-toggle { background:#eee;border:1px solid #ccc;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px }
+    .flags-menu label { cursor:pointer }
+    body.dark-mode .flags-menu { background:#2b2b2b;border-color:#444;color:#ddd }
+    body.dark-mode .flags-toggle { background:#2b2b2b;border-color:#444;color:#ddd }
         `;
         const s = document.createElement('style');
         s.type = 'text/css';
@@ -230,6 +271,7 @@ Happy writing!"></textarea>
         matches: [],
         currentIndex: -1
     };
+    let searchHistory = [];
 
     function toggleFindReplace(openReplace) {
         const bar = document.getElementById('find-replace-bar');
@@ -246,17 +288,33 @@ Happy writing!"></textarea>
         findState.matches = [];
         findState.currentIndex = -1;
         const cs = document.getElementById('case-sensitive') && document.getElementById('case-sensitive').checked;
-        if (!query) {
+        const useRegex = document.getElementById('use-regex') && document.getElementById('use-regex').checked;
+        if (!query) { updateMatchCount(); return; }
+        const text = editor.value;
+        if (useRegex) {
+                // build flags string from flag checkboxes
+                let flags = 'g';
+                if (!cs) flags += 'i';
+                document.querySelectorAll('.flag-checkbox:checked').forEach(b => { const f = b.getAttribute('data-flag'); if (f && !flags.includes(f)) flags += f; });
+            let re;
+            try {
+                re = new RegExp(query, flags);
+            } catch (err) {
+                const el = document.getElementById('match-count'); if (el) el.textContent = 'Invalid regex';
+                return;
+            }
+            let m;
+            while ((m = re.exec(text)) !== null) {
+                findState.matches.push({start: m.index, end: m.index + m[0].length});
+                if (m.index === re.lastIndex) re.lastIndex++; // avoid infinite loop on zero-length matches
+            }
             updateMatchCount();
             return;
         }
-        const text = editor.value;
+        // plain substring search
         let hay = text;
         let needle = query;
-        if (!cs) {
-            hay = text.toLowerCase();
-            needle = query.toLowerCase();
-        }
+        if (!cs) { hay = text.toLowerCase(); needle = query.toLowerCase(); }
         let startIndex = 0;
         while (true) {
             const idx = hay.indexOf(needle, startIndex);
@@ -265,6 +323,56 @@ Happy writing!"></textarea>
             startIndex = idx + query.length;
         }
         updateMatchCount();
+        highlightMatches();
+    }
+
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // Highlight matches in preview pane (best-effort): we'll replace preview innerHTML with highlighted content
+    function highlightMatches() {
+        try {
+            const text = editor.value;
+            const useRegex = document.getElementById('use-regex') && document.getElementById('use-regex').checked;
+            const cs = document.getElementById('case-sensitive') && document.getElementById('case-sensitive').checked;
+            const flagM = document.getElementById('flag-m') && document.getElementById('flag-m').checked;
+            const flagS = document.getElementById('flag-s') && document.getElementById('flag-s').checked;
+            const q = document.getElementById('find-input').value;
+            if (!q) { updatePreview(); return; }
+            // Build regex or literal
+            let re;
+            if (useRegex) {
+                 // build flags from flag checkboxes
+                 let flags = 'g'; if (!cs) flags += 'i';
+                 document.querySelectorAll('.flag-checkbox:checked').forEach(b => { const f = b.getAttribute('data-flag'); if (f && !flags.includes(f)) flags += f; });
+                 try { re = new RegExp(q, flags); } catch (err) { const el = document.getElementById('match-count'); if (el) el.textContent = 'Invalid regex'; return; }
+            } else {
+                const esc = q.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+                let flags = 'g'; if (!cs) flags += 'i'; if (flagM) flags += 'm'; if (flagS) flags += 's';
+                // also include other checked flags
+                document.querySelectorAll('.flag-checkbox:checked').forEach(b => { const f = b.getAttribute('data-flag'); if (f && !flags.includes(f)) flags += f; });
+                re = new RegExp(esc, flags);
+            }
+
+            // Use preview HTML from markdown, but we will operate on text only: highlight in preview by work-around — simple replace on escaped text
+            const escaped = escapeHtml(text);
+            let idx = 0; let out = ''; let m; let lastEnd = 0; let matchIndex = 0;
+            while ((m = re.exec(text)) !== null) {
+                const start = m.index; const end = m.index + m[0].length;
+                out += escapeHtml(text.substring(lastEnd, start));
+                const cls = (findState.currentIndex === matchIndex) ? 'md-match-current find-transition' : 'md-match find-transition';
+                out += `<span class="${cls}">` + escapeHtml(m[0]) + `</span>`;
+                lastEnd = end;
+                matchIndex++;
+                if (m.index === re.lastIndex) re.lastIndex++; // avoid zero-length match infinite loop
+            }
+            out += escapeHtml(text.substring(lastEnd));
+            // Convert newlines to <br> to mimic preview
+            out = out.replace(/\n/g, '<br>');
+            preview.innerHTML = out;
+        } catch (err) {
+            // on error, fallback to normal preview
+            updatePreview();
+        }
     }
 
     function highlightMatch(index) {
@@ -292,6 +400,7 @@ Happy writing!"></textarea>
         if (findState.matches.length === 0) return;
         findState.currentIndex = (findState.currentIndex + 1) % findState.matches.length;
         highlightMatch(findState.currentIndex);
+        highlightMatches();
     }
 
     function findPrev() {
@@ -303,14 +412,41 @@ Happy writing!"></textarea>
         if (findState.matches.length === 0) return;
         findState.currentIndex = (findState.currentIndex - 1 + findState.matches.length) % findState.matches.length;
         highlightMatch(findState.currentIndex);
+        highlightMatches();
     }
 
     function replaceOne() {
         const q = document.getElementById('find-input').value;
         const r = document.getElementById('replace-input').value;
         if (!q) return;
-        // If a match is selected, replace that, otherwise find next then replace
+        // If regex mode, use regex replace semantics
         const cs = document.getElementById('case-sensitive') && document.getElementById('case-sensitive').checked;
+        const useRegex = document.getElementById('use-regex') && document.getElementById('use-regex').checked;
+        if (useRegex) {
+            try {
+                const flags = cs ? '' : 'i';
+                const re = new RegExp(q, flags);
+                const selected = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+                if (selected && re.test(selected)) {
+                    saveToUndoStack();
+                    const replaced = selected.replace(re, r);
+                    editor.setRangeText(replaced, editor.selectionStart, editor.selectionEnd, 'end');
+                    updatePreview(); updateStatusBar(); updateMatches(q); return;
+                }
+                findNext();
+                const sel = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+                if (sel && re.test(sel)) {
+                    saveToUndoStack();
+                    const replaced2 = sel.replace(re, r);
+                    editor.setRangeText(replaced2, editor.selectionStart, editor.selectionEnd, 'end');
+                    updatePreview(); updateStatusBar(); updateMatches(q);
+                }
+            } catch (err) {
+                const el = document.getElementById('match-count'); if (el) el.textContent = 'Invalid regex';
+            }
+            return;
+        }
+        // plain substring replace
         const selected = editor.value.substring(editor.selectionStart, editor.selectionEnd);
         const matchesSelected = selected && ((cs && selected === q) || (!cs && selected.toLowerCase() === q.toLowerCase()));
         if (matchesSelected) {
@@ -338,7 +474,23 @@ Happy writing!"></textarea>
         const r = document.getElementById('replace-input').value;
         if (!q) return;
         const cs = document.getElementById('case-sensitive') && document.getElementById('case-sensitive').checked;
+        const useRegex = document.getElementById('use-regex') && document.getElementById('use-regex').checked;
         const text = editor.value;
+        if (useRegex) {
+            let flags = 'g'; if (!cs) flags += 'i';
+            // include any checked flag checkboxes
+            document.querySelectorAll('.flag-checkbox:checked').forEach(b => { const f = b.getAttribute('data-flag'); if (f && !flags.includes(f)) flags += f; });
+            try {
+                const re = new RegExp(q, flags);
+                if (!re.test(text)) return;
+                saveToUndoStack();
+                editor.value = text.replace(re, r);
+                updatePreview(); updateStatusBar(); updateMatches(q);
+            } catch (err) {
+                const el = document.getElementById('match-count'); if (el) el.textContent = 'Invalid regex';
+            }
+            return;
+        }
         const hay = cs ? text : text.toLowerCase();
         const needle = cs ? q : q.toLowerCase();
         if (hay.indexOf(needle) === -1) return;
@@ -346,7 +498,7 @@ Happy writing!"></textarea>
         if (cs) {
             editor.value = text.split(q).join(r);
         } else {
-            // Case-insensitive replace: do a global replace preserving original non-matching case is not trivial; do a simple approach
+            // Case-insensitive replace: do a simple global replace
             let result = '';
             let idx = 0;
             while (idx < text.length) {
@@ -358,9 +510,7 @@ Happy writing!"></textarea>
             }
             editor.value = result;
         }
-        updatePreview();
-        updateStatusBar();
-        updateMatches(q);
+        updatePreview(); updateStatusBar(); updateMatches(q);
     }
 
     // Wire up find/replace bar buttons
@@ -390,6 +540,59 @@ Happy writing!"></textarea>
         }
         const caseCheckbox = document.getElementById('case-sensitive');
         if (caseCheckbox) caseCheckbox.addEventListener('change', function() { updateMatches(document.getElementById('find-input').value); });
+        const regexCheckbox = document.getElementById('use-regex');
+        if (regexCheckbox) regexCheckbox.addEventListener('change', function() { updateMatches(document.getElementById('find-input').value); });
+        // Flags dropdown toggle
+        const flagsToggle = document.getElementById('flags-toggle');
+        const flagsMenu = document.getElementById('flags-menu');
+        if (flagsToggle && flagsMenu) {
+            flagsToggle.addEventListener('click', function(e) {
+                const expanded = flagsToggle.getAttribute('aria-expanded') === 'true';
+                flagsToggle.setAttribute('aria-expanded', (!expanded).toString());
+                flagsMenu.style.display = expanded ? 'none' : 'block';
+                flagsMenu.setAttribute('aria-hidden', expanded ? 'true' : 'false');
+            });
+            // Close menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!flagsMenu.contains(e.target) && !flagsToggle.contains(e.target)) {
+                    flagsMenu.style.display = 'none';
+                    flagsToggle.setAttribute('aria-expanded', 'false');
+                    flagsMenu.setAttribute('aria-hidden', 'true');
+                }
+            });
+        }
+        // Checkbox change listeners
+        const flagCheckboxes = Array.from(document.querySelectorAll('.flag-checkbox'));
+        flagCheckboxes.forEach(cb => {
+            cb.addEventListener('change', function() { updateMatches(document.getElementById('find-input').value); });
+        });
+
+        // Search history
+        const historyEl = document.getElementById('search-history');
+        try {
+            const stored = localStorage.getItem('md-search-history');
+            if (stored) searchHistory = JSON.parse(stored);
+        } catch (e) { searchHistory = []; }
+        function refreshHistory() {
+            historyEl.innerHTML = '<option value="">Recent searches...</option>' + searchHistory.map(s => `<option>${s}</option>`).join('');
+        }
+        refreshHistory();
+        historyEl.addEventListener('change', function() { if (historyEl.value) { document.getElementById('find-input').value = historyEl.value; updateMatches(historyEl.value); } });
+
+        function pushHistory(q) {
+            if (!q) return;
+            const idx = searchHistory.indexOf(q);
+            if (idx !== -1) searchHistory.splice(idx, 1);
+            searchHistory.unshift(q);
+            if (searchHistory.length > 20) searchHistory.pop();
+            try { localStorage.setItem('md-search-history', JSON.stringify(searchHistory)); } catch (e) {}
+            refreshHistory();
+        }
+
+        // Push on find/replace actions
+        if (findNextBtn) findNextBtn.addEventListener('click', function() { const q = document.getElementById('find-input').value; if (q) pushHistory(q); });
+        if (replaceBtn) replaceBtn.addEventListener('click', function() { const q = document.getElementById('find-input').value; if (q) pushHistory(q); });
+        if (replaceAllBtn) replaceAllBtn.addEventListener('click', function() { const q = document.getElementById('find-input').value; if (q) pushHistory(q); });
     });
 
     // Extend keyboard shortcuts
@@ -821,7 +1024,7 @@ Happy writing!"></textarea>
 
     // Menu functions (placeholder implementations)
     function showAbout() {
-    alert('Markdown Editor v2.0.2\nA WordPad-like markdown editor with real-time preview.\n\nChangelogs: \nv2.0.2: Added Find & Replace and keyboard shortcuts (Ctrl+F/Ctrl+H).\nv2.0.1: TXT file support, fixed split/editor/preview resize bug\nv2.0: Rewritten and CSS included separately. Dark mode support. \nv1.2: Fix table format not working \nv1.1: Changed to new icons');
+    alert('Markdown Editor v2.0.3\nA WordPad-like markdown editor with real-time preview.\n\nChangelogs: \nv2.0.3: Added Regex search/replace mode (toggleable); Regex flags (m/s), search history dropdown, and match highlighting in preview.\nv2.0.2: Added Find & Replace and keyboard shortcuts (Ctrl+F/Ctrl+H).\nv2.0.1: TXT file support, fixed split/editor/preview resize bug\nv2.0: Rewritten and CSS included separately. Dark mode support. \nv1.2: Fix table format not working \nv1.1: Changed to new icons');
     }
 
     function showEditMenu() {
@@ -838,6 +1041,61 @@ Happy writing!"></textarea>
 
     // Initialize the editor when page loads
     window.addEventListener('load', initEditor);
+    // Settings popup logic
+    (function(){
+        // Create popup element
+        const popup = document.createElement('div');
+        popup.id = 'settings-popup';
+        // Minimal inline styles: no external CSS, Times New Roman font
+        popup.style.position = 'fixed';
+        popup.style.top = '100px';
+        popup.style.left = '56px';
+        popup.style.width = '320px';
+        popup.style.background = '#fff';
+        popup.style.border = '1px solid #ccc';
+        popup.style.boxShadow = '0 2px 8px rgba(0,0,0,0.12)';
+        popup.style.zIndex = '10000';
+        popup.style.padding = '12px';
+        popup.style.display = 'none';
+        popup.style.fontFamily = '"Times New Roman", Times, serif';
+        popup.setAttribute('aria-hidden', 'true');
+
+        // Content: heading 'Advanced' and an empty body
+        popup.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <h3 style="margin:0;font-weight:normal;">Advanced</h3>
+                <button id="settings-close" title="Close" style="border:0;background:transparent;cursor:pointer;font-size:16px;">✕</button>
+            </div>
+            <div id="advanced-body"></div>
+        `;
+
+        document.body.appendChild(popup);
+
+        const btn = document.getElementById('sidebar-settings-btn');
+        const closeBtn = popup.querySelector('#settings-close');
+
+        function openPopup() {
+            popup.style.display = 'block';
+            popup.setAttribute('aria-hidden', 'false');
+        }
+        function closePopup() {
+            popup.style.display = 'none';
+            popup.setAttribute('aria-hidden', 'true');
+        }
+
+        btn.addEventListener('click', function(e){
+            e.stopPropagation();
+            if (popup.style.display === 'none') openPopup(); else closePopup();
+        });
+
+        closeBtn.addEventListener('click', function(e){ e.stopPropagation(); closePopup(); });
+
+        // Close when clicking outside
+        document.addEventListener('click', function(e){
+            if (popup.style.display === 'none') return;
+            if (!popup.contains(e.target) && e.target !== btn) closePopup();
+        });
+    })();
 </script>
 </body>
 </html>
