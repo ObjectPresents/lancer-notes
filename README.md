@@ -6,6 +6,10 @@ Project completed by 100% solo with moderate use of AI, templates and inspriatio
 Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (Bluesky) or lightingperson_2763@outlook.com.vn
 
 ## Changelogs:
+#### v2.0.4 (25/9/2025)
+Popup UI Changed to be modular and most of them are centered (not consistent yet, coming soon)
+Settings finally removed (as a bug)
+Support for Full Blockquote, Proper number list support, Espcaing characters
 #### v2.0.3 (24/9/2025)
 Added Regex search/replace mode (toggleable); Regex flags (m/s), search history dropdown, and match highlighting in preview.
 #### v2.0.2 (21/9/2025)
