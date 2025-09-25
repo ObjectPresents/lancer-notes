@@ -67,15 +67,6 @@
         </div>
     </div>
 
-    <!-- Main sidebar (added) -->
-    <div id="main-sidebar" style="position:fixed;left:0;top:84px;bottom:40px;width:48px;display:flex;flex-direction:column;align-items:center;background:#f5f5f5;border-right:1px solid #e0e0e0;z-index:400;">
-        <!-- Other sidebar items could go here -->
-        <div style="flex:1;"></div>
-        <!-- Settings button placed on the right side of the sidebar -->
-        <button id="sidebar-settings-btn" title="Settings" style="align-self:flex-end;margin-right:4px;padding:6px 8px;cursor:pointer;border:0;background:transparent;font-size:16px;">⚙️</button>
-        <div style="height:8px"></div>
-    </div>
-
     <div class="main-container" id="main-container">
         <div class="editor-pane" id="editor-pane">
             <div class="pane-header">Markdown Editor</div>
@@ -118,7 +109,7 @@ Happy writing!"></textarea>
 </div>
 
 <!-- Find/Replace Bar -->
-<div id="find-replace-bar" style="display:none;position:fixed;right:20px;top:70px;background:#fff;border:1px solid #ccc;padding:10px;z-index:999;width:420px;box-shadow:0 2px 6px rgba(0,0,0,0.15);font-size:13px;">
+<div id="find-replace-bar" style="display:none;position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#fff;border:1px solid #ccc;padding:10px;z-index:1001;width:420px;box-shadow:0 2px 6px rgba(0,0,0,0.15);font-size:13px;">
     <div style="display:flex;gap:8px;align-items:center;">
         <input id="find-input" placeholder="Find" style="flex:1;padding:6px;" />
         <input id="replace-input" placeholder="Replace" style="flex:1;padding:6px;" />
@@ -135,8 +126,6 @@ Happy writing!"></textarea>
                     <div id="flags-menu" class="flags-menu" role="menu" aria-hidden="true" style="display:none;position:absolute;right:0;top:30px;background:#fff;border:1px solid #ccc;padding:8px;box-shadow:0 2px 6px rgba(0,0,0,0.12);z-index:1000;min-width:140px;font-size:12px;">
                         <label style="display:block;margin-bottom:6px;"><input type="checkbox" id="flag-m" data-flag="m" class="flag-checkbox" /> m (multiline)</label>
                         <label style="display:block;margin-bottom:6px;"><input type="checkbox" id="flag-s" data-flag="s" class="flag-checkbox" /> s (dotAll)</label>
-                        <label style="display:block;margin-bottom:6px;"><input type="checkbox" id="flag-u" data-flag="u" class="flag-checkbox" /> u (unicode)</label>
-                        <label style="display:block;margin-bottom:0;"><input type="checkbox" id="flag-y" data-flag="y" class="flag-checkbox" /> y (sticky)</label>
                     </div>
                 </div>
             </div>
@@ -155,6 +144,32 @@ Happy writing!"></textarea>
         </select>
         <div style="font-size:11px;color:#666;">Hints: Use Regex for patterns</div>
     </div>
+</div>
+
+<!-- Overlay for popups -->
+<div id="popup-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999;"></div>
+
+<!-- Link/Image Dialog -->
+<div id="link-image-dialog" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #ccc;padding:16px;z-index:1000;width:400px;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+    <h3 id="dialog-title" style="margin-top:0;margin-bottom:15px;font-size:16px;">Insert Link</h3>
+    <div style="margin-bottom:10px;">
+        <label for="dialog-url" style="display:block;margin-bottom:5px;font-size:13px;">URL</label>
+        <input id="dialog-url" type="text" style="width:100%;padding:8px;font-size:14px;" />
+    </div>
+    <div style="margin-bottom:15px;">
+        <label for="dialog-text" id="dialog-text-label" style="display:block;margin-bottom:5px;font-size:13px;">Text</label>
+        <input id="dialog-text" type="text" style="width:100%;padding:8px;font-size:14px;" />
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button id="dialog-cancel">Cancel</button>
+        <button id="dialog-ok">OK</button>
+    </div>
+</div>
+
+<!-- Custom Alert Dialog -->
+<div id="custom-alert" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #ccc;padding:20px;z-index:1000;width:450px;box-shadow:0 4px 12px rgba(0,0,0,0.15);text-align:center;">
+    <div id="custom-alert-message" style="margin-bottom:20px;font-size:14px;line-height:1.6;white-space:pre-wrap;"></div>
+    <button id="custom-alert-ok" style="padding:8px 20px;">OK</button>
 </div>
 
 <input type="file" id="file-input" class="hidden-file-input" accept=".md,.txt,.text" />
@@ -179,6 +194,13 @@ Happy writing!"></textarea>
     .flags-menu label { cursor:pointer }
     body.dark-mode .flags-menu { background:#2b2b2b;border-color:#444;color:#ddd }
     body.dark-mode .flags-toggle { background:#2b2b2b;border-color:#444;color:#ddd }
+    body.dark-mode #link-image-dialog { background: #222; border-color: #444; color: #ddd; }
+    body.dark-mode #link-image-dialog input { background: #2b2b2b; color:#eee; border:1px solid #444 }
+    body.dark-mode #link-image-dialog button { background:#333; color:#ddd; border:1px solid #444 }
+    #popup-overlay { transition: background-color 0.3s; }
+    body.dark-mode #popup-overlay { background: rgba(255, 255, 255, 0.1); }
+    body.dark-mode #custom-alert { background: #222; border-color: #444; color: #ddd; }
+    body.dark-mode #custom-alert button { background:#333; color:#ddd; border:1px solid #444 }
         `;
         const s = document.createElement('style');
         s.type = 'text/css';
@@ -641,10 +663,12 @@ Happy writing!"></textarea>
         }
     }
 
-    // ...existing code...
     // Markdown parsing function - converts markdown to HTML
     function parseMarkdown(markdown) {
         let html = markdown;
+
+        // Handle escaped characters first
+        html = html.replace(/\\([\\`\*_{}\[\]()#+\-.!|])/g, function(match, p1) { return '@@ESCAPED:' + p1.charCodeAt(0).toString(16) + '@@'; });
 
         // Handle tables first
         html = html.replace(/^\|(.+)\r?\n\|( *[-:]+ *\|)+.*\r?\n((\|.+\r?\n*)*)/gm, (match) => {
@@ -684,6 +708,44 @@ Happy writing!"></textarea>
             return `\n${tableHtml}\n`; // Add newlines to help with paragraph separation
         });
 
+        // Blockquotes: support nested blockquotes using multiple > at line start
+        function parseBlockquotes(text) {
+            const lines = text.split(/\r?\n/);
+            let result = [];
+            let buffer = [];
+            let lastLevel = 0;
+            function flush(level) {
+                if (buffer.length === 0) return;
+                let content = buffer.join('\n');
+                if (lastLevel > 0) {
+                    content = parseBlockquotes(content);
+                    for (let i = 0; i < lastLevel; i++) {
+                        content = `<blockquote>${content}</blockquote>`;
+                    }
+                }
+                result.push(content);
+                buffer = [];
+            }
+            for (let line of lines) {
+                const match = line.match(/^(>+)( ?)(.*)$/);
+                if (match) {
+                    const level = match[1].length;
+                    if (lastLevel !== 0 && level !== lastLevel) {
+                        flush(lastLevel);
+                    }
+                    buffer.push(match[3]);
+                    lastLevel = level;
+                } else {
+                    flush(lastLevel);
+                    result.push(line);
+                    lastLevel = 0;
+                }
+            }
+            flush(lastLevel);
+            return result.join('\n');
+        }
+        html = parseBlockquotes(html);
+
         // Original parsing logic continues here...
         html = html
             // Headers
@@ -702,18 +764,23 @@ Happy writing!"></textarea>
             
             // Links & Images
             .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
-            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-            
-            // Lists
-            .replace(/^\s*\* (.+)$/gm, '<li>$1</li>')
-            .replace(/^\s*- (.+)$/gm, '<li>$1</li>')
-            .replace(/^\s*\d+\. (.+)$/gm, '<li>$1</li>')
-            
-            // Blockquotes
-            .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-            
-            // Line breaks and paragraphs
-            .replace(/\n\n/g, '</p><p>')
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+
+        // A more robust list processing logic that handles blocks directly.
+        // Unordered lists
+        html = html.replace(/((?:^[\*\-\+] .*$\r?\n?)+)/gm, (match) => {
+            const items = match.trim().split('\n').map(line => `<li>${line.substring(2)}</li>`).join('');
+            return `<ul>${items}</ul>`;
+        });
+
+        // Ordered lists
+        html = html.replace(/((?:^\d+\. .*$\r?\n?)+)/gm, (match) => {
+            const items = match.trim().split('\n').map(line => `<li>${line.replace(/^\d+\.\s*/, '')}</li>`).join('');
+            return `<ol>${items}</ol>`;
+        });
+
+        // Line breaks and paragraphs
+        html = html.replace(/\n\n/g, '</p><p>')
             .replace(/\n/g, '<br>');
 
         // Wrap in paragraphs and fix lists
@@ -729,6 +796,9 @@ Happy writing!"></textarea>
         // Fix empty paragraphs
         html = html.replace(/<p>\s*<\/p>/g, '');
         html = html.replace(/<p><br><\/p>/g, '');
+
+        // Restore escaped characters
+        html = html.replace(/@@ESCAPED:([0-9a-f]+)@@/gi, function(match, p1) { return String.fromCharCode(parseInt(p1, 16)); });
 
         return html;
     }
@@ -925,21 +995,56 @@ Happy writing!"></textarea>
     }
 
     function insertLink() {
-        const url = prompt('Enter URL:');
-        if (url) {
-            const text = prompt('Enter link text:') || url;
-            insertMarkdown(`[${text}](${url})`, '');
-            editor.selectionStart = editor.selectionEnd = editor.selectionStart + `[${text}](${url})`.length;
-        }
+        showLinkImageDialog('link');
     }
 
     function insertImage() {
-        const url = prompt('Enter image URL:');
-        if (url) {
-            const alt = prompt('Enter alt text:') || 'Image';
-            insertMarkdown(`![${alt}](${url})`, '');
-             editor.selectionStart = editor.selectionEnd = editor.selectionStart + `![${alt}](${url})`.length;
-        }
+        showLinkImageDialog('image');
+    }
+
+    function showLinkImageDialog(type) {
+        const dialog = document.getElementById('link-image-dialog');
+        const overlay = document.getElementById('popup-overlay');
+        const title = document.getElementById('dialog-title');
+        const textLabel = document.getElementById('dialog-text-label');
+        const urlInput = document.getElementById('dialog-url');
+        const textInput = document.getElementById('dialog-text');
+        const okBtn = document.getElementById('dialog-ok');
+        const cancelBtn = document.getElementById('dialog-cancel');
+
+        title.textContent = type === 'link' ? 'Insert Link' : 'Insert Image';
+        textLabel.textContent = type === 'link' ? 'Text' : 'Alt Text';
+        urlInput.value = '';
+        textInput.value = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+
+        overlay.style.display = 'block';
+        dialog.style.display = 'block';
+        urlInput.focus();
+
+        const handleOk = () => {
+            const url = urlInput.value;
+            const text = textInput.value;
+            if (url) {
+                const markdown = type === 'link' ? `[${text || url}](${url})` : `![${text || 'Image'}](${url})`;
+                insertMarkdown(markdown, '');
+            }
+            closeDialog();
+        };
+
+        const handleCancel = () => {
+            closeDialog();
+        };
+
+        const closeDialog = () => {
+            overlay.style.display = 'none';
+            dialog.style.display = 'none';
+            okBtn.removeEventListener('click', handleOk);
+            cancelBtn.removeEventListener('click', handleCancel);
+            editor.focus();
+        };
+
+        okBtn.addEventListener('click', handleOk);
+        cancelBtn.addEventListener('click', handleCancel);
     }
 
     function insertTable() {
@@ -1022,80 +1127,45 @@ Happy writing!"></textarea>
         }, 3000);
     }
 
+    // Custom alert function
+    function customAlert(message, callback) {
+        const alertBox = document.getElementById('custom-alert');
+        const overlay = document.getElementById('popup-overlay');
+        const msgEl = document.getElementById('custom-alert-message');
+        const okBtn = document.getElementById('custom-alert-ok');
+
+        msgEl.textContent = message;
+        overlay.style.display = 'block';
+        alertBox.style.display = 'block';
+
+        const closeAlert = () => {
+            alertBox.style.display = 'none';
+            overlay.style.display = 'none';
+            okBtn.removeEventListener('click', closeAlert);
+            if (callback) callback();
+        };
+        okBtn.addEventListener('click', closeAlert);
+    }
+
     // Menu functions (placeholder implementations)
     function showAbout() {
-    alert('Markdown Editor v2.0.3\nA WordPad-like markdown editor with real-time preview.\n\nChangelogs: \nv2.0.3: Added Regex search/replace mode (toggleable); Regex flags (m/s), search history dropdown, and match highlighting in preview.\nv2.0.2: Added Find & Replace and keyboard shortcuts (Ctrl+F/Ctrl+H).\nv2.0.1: TXT file support, fixed split/editor/preview resize bug\nv2.0: Rewritten and CSS included separately. Dark mode support. \nv1.2: Fix table format not working \nv1.1: Changed to new icons');
+    customAlert('Markdown Editor v2.0.4\nA WordPad-like markdown editor with real-time preview.\n\nChangelogs: \nv2.0.4: Unordered list markers support (*, -, +); UI improvements (centered Find/Replace, popup overlays, custom dialogs).\nv2.0.3: Added Regex search/replace mode (toggleable); Regex flags (m/s), search history dropdown, and match highlighting in preview.\nv2.0.2: Added Find & Replace and keyboard shortcuts (Ctrl+F/Ctrl+H).\nv2.0.1: TXT file support, fixed split/editor/preview resize bug\nv2.0: Rewritten and CSS included separately. Dark mode support. \nv1.2: Fix table format not working \nv1.1: Changed to new icons');
     }
 
     function showEditMenu() {
-        alert('Edit menu - Use Ctrl+Z/Ctrl+Y for undo/redo, or the toolbar buttons.');
+        customAlert('Edit menu - Use Ctrl+Z/Ctrl+Y for undo/redo, or the toolbar buttons.');
     }
 
     function showViewMenu() {
-        alert('View menu - Use the view toggle buttons to switch between Editor, Preview, and Split view.');
+        customAlert('View menu - Use the view toggle buttons to switch between Editor, Preview, and Split view.');
     }
 
     function showHelp() {
-        alert('Help:\n• Use ** for bold text\n• Use * for italic text\n• Use # for headers\n• Use - or * for lists\n• Use [text](url) for links\n• Use ![alt](url) for images');
+        customAlert('Help:\n• Use ** for bold text\n• Use * for italic text\n• Use # for headers\n• Use - or * for lists\n• Use [text](url) for links\n• Use ![alt](url) for images');
     }
 
     // Initialize the editor when page loads
     window.addEventListener('load', initEditor);
-    // Settings popup logic
-    (function(){
-        // Create popup element
-        const popup = document.createElement('div');
-        popup.id = 'settings-popup';
-        // Minimal inline styles: no external CSS, Times New Roman font
-        popup.style.position = 'fixed';
-        popup.style.top = '100px';
-        popup.style.left = '56px';
-        popup.style.width = '320px';
-        popup.style.background = '#fff';
-        popup.style.border = '1px solid #ccc';
-        popup.style.boxShadow = '0 2px 8px rgba(0,0,0,0.12)';
-        popup.style.zIndex = '10000';
-        popup.style.padding = '12px';
-        popup.style.display = 'none';
-        popup.style.fontFamily = '"Times New Roman", Times, serif';
-        popup.setAttribute('aria-hidden', 'true');
-
-        // Content: heading 'Advanced' and an empty body
-        popup.innerHTML = `
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <h3 style="margin:0;font-weight:normal;">Advanced</h3>
-                <button id="settings-close" title="Close" style="border:0;background:transparent;cursor:pointer;font-size:16px;">✕</button>
-            </div>
-            <div id="advanced-body"></div>
-        `;
-
-        document.body.appendChild(popup);
-
-        const btn = document.getElementById('sidebar-settings-btn');
-        const closeBtn = popup.querySelector('#settings-close');
-
-        function openPopup() {
-            popup.style.display = 'block';
-            popup.setAttribute('aria-hidden', 'false');
-        }
-        function closePopup() {
-            popup.style.display = 'none';
-            popup.setAttribute('aria-hidden', 'true');
-        }
-
-        btn.addEventListener('click', function(e){
-            e.stopPropagation();
-            if (popup.style.display === 'none') openPopup(); else closePopup();
-        });
-
-        closeBtn.addEventListener('click', function(e){ e.stopPropagation(); closePopup(); });
-
-        // Close when clicking outside
-        document.addEventListener('click', function(e){
-            if (popup.style.display === 'none') return;
-            if (!popup.contains(e.target) && e.target !== btn) closePopup();
-        });
-    })();
 </script>
 </body>
 </html>

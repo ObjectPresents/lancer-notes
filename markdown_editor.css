@@ -21,6 +21,11 @@
     color: #4fc3f7;
 }
 
+.dark-mode .preview-content blockquote blockquote {
+    border-left-color: #22d3ee;
+    background: #162029;
+}
+
 /* Fix: Dark mode for preview backgrounds */
 .dark-mode .preview-content h1,
 .dark-mode .preview-content h2 {
@@ -334,10 +339,17 @@ body {
 .preview-content blockquote {
     border-left: 4px solid #007acc;
     background: #eaf6fb;
-    padding-left: 20px;
+    padding: 10px 20px;
     margin: 15px 0;
     color: #005a9e;
     font-family: inherit;
+}
+
+.preview-content blockquote blockquote {
+    border-left-color: #7dd3fc;
+    background: #f0f9ff;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .preview-content table {
