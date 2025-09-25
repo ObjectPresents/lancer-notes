@@ -15,7 +15,7 @@ Added Regex search/replace mode (toggleable); Regex flags (m/s), search history 
 #### v2.0.2 (21/9/2025)
 Find and replace support
 #### v2.0.1 (19/9/2025)
-Added support for .txt
+Added support for .txt\
 Fixed editor UI bug where it breaks after resizing spilt mode
 #### v2.0 (18/9/2025): 
 Changed structure of the code - from then it's not the same and need to be downloaded manually.
