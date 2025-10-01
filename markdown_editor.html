@@ -6,6 +6,111 @@
     <title>Markdown Editor</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="markdown_editor.css" />
+    <style>
+      body.dark-mode #find-replace-bar {
+        background: #181a1b !important;
+        border-color: #444 !important;
+        color: #e0e0e0 !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+      }
+      body.dark-mode #find-replace-bar input {
+        background: #101214 !important;
+        color: #e0e0e0 !important;
+        border: 1px solid #444 !important;
+      }
+      body.dark-mode #find-replace-bar button {
+        background: #23272a !important;
+        color: #e0e0e0 !important;
+        border: 1px solid #444 !important;
+      }
+      body.dark-mode #find-replace-bar button:hover {
+        background: #2d3136 !important;
+        border-color: #666 !important;
+      }
+      body.dark-mode #link-image-dialog {
+        background: #181a1b !important;
+        border-color: #444 !important;
+        color: #e0e0e0 !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+      }
+      body.dark-mode #link-image-dialog input {
+        background: #101214 !important;
+        color: #e0e0e0 !important;
+        border: 1px solid #444 !important;
+      }
+      body.dark-mode #link-image-dialog button {
+        background: #23272a !important;
+        color: #e0e0e0 !important;
+        border: 1px solid #444 !important;
+        transition: all 0.2s !important;
+      }
+      body.dark-mode #link-image-dialog button:hover {
+        background: #2d3136 !important;
+        border-color: #666 !important;
+      }
+      body.dark-mode #custom-alert {
+        background: #181a1b !important;
+        border-color: #444 !important;
+        color: #e0e0e0 !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+      }
+      body.dark-mode #custom-alert button {
+        background: #23272a !important;
+        color: #e0e0e0 !important;
+        border: 1px solid #444 !important;
+        transition: all 0.2s !important;
+      }
+      body.dark-mode #custom-alert button:hover {
+        background: #2d3136 !important;
+        border-color: #666 !important;
+      }
+      body.dark-mode #popup-overlay {
+        background: rgba(0,0,0,0.5) !important;
+      }
+      .md-img-info-wrap {
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
+        max-width: 100%;
+      }
+      .md-img-info-wrap img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+      .md-img-info-badge {
+        position: absolute;
+        bottom: 6px;
+        right: 6px;
+        background: #007acc;
+        color: #fff;
+        font-size: 13px;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+        cursor: pointer;
+        z-index: 2;
+        border: 2px solid #fff;
+        transition: background 0.2s;
+      }
+      .md-img-info-badge:hover {
+        background: #005a9e;
+      }
+      .dark-mode .md-img-info-badge {
+        background: #23272a;
+        color: #e0e0e0;
+        border: 2px solid #181a1b;
+      }
+      .dark-mode .md-img-info-badge:hover {
+        background: #005a9e;
+        color: #fff;
+      }
+    </style>
 </head>
 <body>
     <div class="menu-bar">
@@ -172,6 +277,24 @@ Happy writing!"></textarea>
     <button id="custom-alert-ok" style="padding:8px 20px;">OK</button>
 </div>
 
+<!-- Markdown Guide Help Popup -->
+<div id="help-popup" style="display:none;position:fixed;top:5vh;left:50%;transform:translateX(-50%);width:90vw;height:90vh;z-index:2000;background:#fff;border:2px solid #007acc;box-shadow:0 8px 32px rgba(0,0,0,0.25);border-radius:10px;overflow:hidden;">
+      <div style="background:#007acc;color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-weight:bold;">Markdown Guide</span>
+        <button id="help-popup-close" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">&times;</button>
+      </div>
+      <iframe src="https://www.markdownguide.org/basic-syntax/" style="width:100%;height:calc(100% - 44px);border:none;background:#fff;"></iframe>
+    </div>
+
+<!-- Changelog Popup -->
+<div id="changelog-popup" style="display:none;position:fixed;top:5vh;left:50%;transform:translateX(-50%);width:90vw;height:90vh;z-index:2000;background:#fff;border:2px solid #007acc;box-shadow:0 8px 32px rgba(0,0,0,0.25);border-radius:10px;overflow:hidden;">
+      <div style="background:#007acc;color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-weight:bold;">Changelogs</span>
+        <button id="changelog-popup-close" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">&times;</button>
+      </div>
+      <iframe src="https://objectpresents.github.io/lancer-notes/" style="width:100%;height:calc(100% - 44px);border:none;background:#fff;"></iframe>
+    </div>
+
 <input type="file" id="file-input" class="hidden-file-input" accept=".md,.txt,.text" />
 
 <script>
@@ -201,6 +324,8 @@ Happy writing!"></textarea>
     body.dark-mode #popup-overlay { background: rgba(255, 255, 255, 0.1); }
     body.dark-mode #custom-alert { background: #222; border-color: #444; color: #ddd; }
     body.dark-mode #custom-alert button { background:#333; color:#ddd; border:1px solid #444 }
+    body.dark-mode #help-popup, body.dark-mode #changelog-popup { background: #222; border-color: #444; }
+    body.dark-mode #help-popup iframe, body.dark-mode #changelog-popup iframe { background: #222; color: #e0e0e0; }
         `;
         const s = document.createElement('style');
         s.type = 'text/css';
@@ -763,8 +888,15 @@ Happy writing!"></textarea>
             .replace(/`([^`]+)`/g, '<code>$1</code>')
             
             // Links & Images
-            .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
-            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+            .replace(/!\[([^\]]*)\]\(([^\s\)]+)(?:\s+"([^"]*)")?\)/g, function(match, alt, url, title) {
+                let info = (alt && alt.trim()) || (title && title.trim());
+                let imgTag = `<img src="${url}" alt="${alt || ''}"${title ? ` title="${title}"` : ''}>`;
+                if (info) {
+                    return `<span class="md-img-info-wrap">${imgTag}<span class="md-img-info-badge" title="Image info">i</span></span>`;
+                } else {
+                    return imgTag;
+                }
+            });
 
         // A more robust list processing logic that handles blocks directly.
         // Unordered lists
@@ -1149,8 +1281,10 @@ Happy writing!"></textarea>
 
     // Menu functions (placeholder implementations)
     function showAbout() {
-    customAlert('Markdown Editor v2.0.4\nA WordPad-like markdown editor with real-time preview.\n\nChangelogs: \nv2.0.4: Unordered list markers support (*, -, +); UI improvements (centered Find/Replace, popup overlays, custom dialogs).\nv2.0.3: Added Regex search/replace mode (toggleable); Regex flags (m/s), search history dropdown, and match highlighting in preview.\nv2.0.2: Added Find & Replace and keyboard shortcuts (Ctrl+F/Ctrl+H).\nv2.0.1: TXT file support, fixed split/editor/preview resize bug\nv2.0: Rewritten and CSS included separately. Dark mode support. \nv1.2: Fix table format not working \nv1.1: Changed to new icons');
+        document.getElementById('changelog-popup').style.display = 'block';
+        document.getElementById('popup-overlay').style.display = 'block';
     }
+
 
     function showEditMenu() {
         customAlert('Edit menu - Use Ctrl+Z/Ctrl+Y for undo/redo, or the toolbar buttons.');
@@ -1161,8 +1295,44 @@ Happy writing!"></textarea>
     }
 
     function showHelp() {
-        customAlert('Help:\n• Use ** for bold text\n• Use * for italic text\n• Use # for headers\n• Use - or * for lists\n• Use [text](url) for links\n• Use ![alt](url) for images');
+      document.getElementById('help-popup').style.display = 'block';
+      document.getElementById('popup-overlay').style.display = 'block';
     }
+    // Hide help popup
+    document.addEventListener('DOMContentLoaded', function() {
+      var closeBtn = document.getElementById('help-popup-close');
+      if (closeBtn) closeBtn.onclick = function() {
+        document.getElementById('help-popup').style.display = 'none';
+        document.getElementById('popup-overlay').style.display = 'none';
+      };
+      // Also close when clicking overlay
+      var overlay = document.getElementById('popup-overlay');
+      if (overlay) overlay.addEventListener('click', function() {
+        document.getElementById('help-popup').style.display = 'none';
+        overlay.style.display = 'none';
+      });
+    });
+
+    // Handle image info badge clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('md-img-info-badge')) {
+            // Hide any other open popups
+            document.querySelectorAll('.md-img-info-popup').forEach(popup => {
+                if (popup !== e.target.nextElementSibling) {
+                    popup.style.display = 'none';
+                }
+            });
+            
+            // Toggle this popup
+            const popup = e.target.nextElementSibling;
+            popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+        } else if (!e.target.closest('.md-img-info-popup')) {
+            // Click outside popup - hide all popups
+            document.querySelectorAll('.md-img-info-popup').forEach(popup => {
+                popup.style.display = 'none';
+            });
+        }
+    });
 
     // Initialize the editor when page loads
     window.addEventListener('load', initEditor);

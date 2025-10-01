@@ -1,3 +1,4 @@
+
 /* Fix: Dark mode for view toggle buttons */
 .dark-mode .view-toggle button {
     background-color: #23272a;
@@ -91,16 +92,19 @@ body.dark-mode {
     background-color: #005a9e;
 }
 .dark-mode .status-bar {
-    background-color: #005a9e;
-    color: #fff;
+    background-color: #23272a;
+    color: #e0e0e0;
+    border-top: 1px solid #444;
 }
 .dark-mode .preview-content pre {
-    background-color: #181a1b;
+    background-color: #101214;
     border: 1px solid #444;
+    color: #e0e0e0;
 }
 .dark-mode .preview-content code {
-    background-color: #101214;
+    background-color: #1a1d1f;
     color: #e0e0e0;
+    border: 1px solid #333;
 }
 .dark-mode .preview-content th, .dark-mode .preview-content td {
     border: 1px solid #444;
@@ -109,6 +113,80 @@ body.dark-mode {
     background-color: #1e2225;
     color: #e0e0e0;
 }
+
+/* Dark mode dialog and overlay styles */
+.dark-mode #find-replace-bar {
+    background: #181a1b;
+    border-color: #444;
+    color: #e0e0e0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode #find-replace-bar input {
+    background: #101214;
+    color: #e0e0e0;
+    border: 1px solid #444;
+}
+
+.dark-mode #find-replace-bar button {
+    background: #23272a;
+    color: #e0e0e0;
+    border: 1px solid #444;
+}
+
+.dark-mode #find-replace-bar button:hover {
+    background: #2d3136;
+    border-color: #666;
+}
+
+.dark-mode #link-image-dialog {
+    background: #181a1b;
+    border-color: #444;
+    color: #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode #link-image-dialog input {
+    background: #101214;
+    color: #e0e0e0;
+    border: 1px solid #444;
+}
+
+.dark-mode #link-image-dialog button {
+    background: #23272a;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    transition: all 0.2s;
+}
+
+.dark-mode #link-image-dialog button:hover {
+    background: #2d3136;
+    border-color: #666;
+}
+
+.dark-mode #custom-alert {
+    background: #181a1b;
+    border-color: #444;
+    color: #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode #custom-alert button {
+    background: #23272a;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    transition: all 0.2s;
+}
+
+.dark-mode #custom-alert button:hover {
+    background: #2d3136;
+    border-color: #666;
+}
+
+.dark-mode #popup-overlay {
+    background: rgba(0, 0, 0, 0.5);
+}
+
 /*
  * Styles for Markdown Editor
  * Extracted from markdown_editor.html for better maintainability
