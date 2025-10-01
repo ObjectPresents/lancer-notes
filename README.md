@@ -6,6 +6,10 @@ Project completed by 100% solo with moderate use of AI, templates and inspriatio
 Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (Bluesky) or lightingperson_2763@outlook.com.vn
 
 ## Changelogs:
+#### v2.0.5 (1/10/2025)
+Happy Halloween! We have updated those features for you and fixes bugs.\
+New changelogs and help layout.\
+Fixed broken dark mode (most of the time, it's still inconsistent)
 #### v2.0.4 (25/9/2025)
 Popup UI Changed to be modular and most of them are centered (not consistent yet, coming soon)\
 Settings finally removed (as a bug)\
