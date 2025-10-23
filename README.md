@@ -29,6 +29,8 @@ Changed structure of the code - from then it's not the same and need to be downl
 #### v1.2 (17/9/2025):
 Fixed issue where Table format didn't work outright.
 #### v1.1 (16/9/2025):
-New icon design
-
+New icon design\
 Minor bug fixed
+#### v1.0 (14/1/2024): 
+Orginial Markdown Editior, forked from Lancer Fan Club Forums.\
+Features Headings, Basic syntax, code support, Basic table support, and very simple UI.
