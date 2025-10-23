@@ -113,6 +113,19 @@ body.dark-mode {
     background-color: #1e2225;
     color: #e0e0e0;
 }
+.dark-mode .preview-content hr { border-top: 1px solid #444; }
+/* Dark mode custom checkbox */
+.dark-mode .preview-content li.task-item input[type="checkbox"] {
+    border-color: #555;
+    background: #101214;
+}
+.dark-mode .preview-content li.task-item input[type="checkbox"]:checked {
+    background: #005a9e;
+    border-color: #005a9e;
+}
+.dark-mode .preview-content li.task-item input[type="checkbox"]:focus-visible {
+    outline: 2px solid #3399ff;
+}
 
 /* Dark mode dialog and overlay styles */
 .dark-mode #find-replace-bar {
@@ -395,10 +408,26 @@ body {
     color: #222;
 }
 
+.preview-content a {
+    color: #005a9e;
+    text-decoration: underline;
+}
+.preview-content a:hover {
+    color: #003f6e;
+}
+
+.preview-content img {
+    max-width: 100%;
+    height: auto;
+}
+
 .dark-mode .preview-content code {
     color: #e0e0e0;
     -webkit-text-fill-color: initial;
 }
+
+.dark-mode .preview-content a { color: #4fc3f7; }
+.dark-mode .preview-content a:hover { color: #22d3ee; }
 
 .preview-content pre {
     background-color: #f8f8f8;
@@ -407,6 +436,12 @@ body {
     padding: 15px;
     overflow-x: auto;
     margin-bottom: 15px;
+}
+
+.preview-content hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 16px 0;
 }
 
 .preview-content pre code {
@@ -450,6 +485,63 @@ body {
 .hidden-file-input {
     display: none;
 }
+
+/* Table alignment helpers */
+.preview-content th.align-left, .preview-content td.align-left { text-align: left; }
+.preview-content th.align-center, .preview-content td.align-center { text-align: center; }
+.preview-content th.align-right, .preview-content td.align-right { text-align: right; }
+
+/* Task lists */
+.preview-content ul.task-list { list-style: none; padding-left: 0; }
+.preview-content li.task-item { list-style: none; margin-left: 0; }
+/* Custom checkbox styling (disabled but themed) */
+.preview-content li.task-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    display: inline-block;
+    vertical-align: -2px;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    background: #fff;
+    position: relative;
+}
+.preview-content li.task-item input[type="checkbox"]:checked {
+    background: #007acc;
+    border-color: #007acc;
+}
+.preview-content li.task-item input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 6px;
+    height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+.preview-content li.task-item input[type="checkbox"]:focus-visible {
+    outline: 2px solid #66afe9;
+    outline-offset: 2px;
+}
+
+/* Footnotes */
+.preview-content .footnotes { font-size: 0.9em; color: #555; }
+.preview-content .footnotes hr { border: none; border-top: 1px solid #ddd; margin: 20px 0; }
+.preview-content .footnotes ol { padding-left: 24px; }
+.preview-content .footnote-ref a { text-decoration: none; }
+.preview-content .footnote-backref { text-decoration: none; margin-left: 6px; }
+
+/* Definition lists */
+.preview-content dl { margin: 12px 0; }
+.preview-content dt { font-weight: 600; }
+.preview-content dd { margin: 0 0 10px 20px; }
+
+/* Sub/Sup baseline tweaks */
+.preview-content sub, .preview-content sup { line-height: 0; }
 
 .view-toggle {
     display: flex;

@@ -137,6 +137,7 @@
             <button class="toolbar-btn icon-only" id="btn-italic" title="Italic"><span class="material-symbols-outlined">format_italic</span></button>
             <button class="toolbar-btn icon-only" id="btn-strike" title="Strikethrough"><span class="material-symbols-outlined">strikethrough_s</span></button>
             <button class="toolbar-btn icon-only" id="btn-code" title="Code"><span class="material-symbols-outlined">code</span></button>
+            <button class="toolbar-btn" id="btn-hr" title="Horizontal Rule"><span class="material-symbols-outlined">horizontal_rule</span> HR</button>
         </div>
         
         <div class="toolbar-group">
@@ -146,15 +147,26 @@
         </div>
         
         <div class="toolbar-group">
+            <button class="toolbar-btn icon-only" id="btn-subscript" title="Subscript"><span class="material-symbols-outlined">subscript</span></button>
+            <button class="toolbar-btn icon-only" id="btn-superscript" title="Superscript"><span class="material-symbols-outlined">superscript</span></button>
+            <button class="toolbar-btn" id="btn-footnote" title="Insert Footnote"><span class="material-symbols-outlined">format_quote</span> Footnote</button>
+        </div>
+        
+        <div class="toolbar-group">
             <button class="toolbar-btn" id="btn-bullet-list" title="Bullet List"><span class="material-symbols-outlined">format_list_bulleted</span> List</button>
             <button class="toolbar-btn" id="btn-number-list" title="Numbered List"><span class="material-symbols-outlined">format_list_numbered</span> List</button>
             <button class="toolbar-btn" id="btn-quote" title="Quote"><span class="material-symbols-outlined">format_quote</span> Quote</button>
+            <button class="toolbar-btn" id="btn-task" title="Task Item"><span class="material-symbols-outlined">checklist</span> Task</button>
         </div>
         
         <div class="toolbar-group">
             <button class="toolbar-btn" id="btn-link" title="Insert Link"><span class="material-symbols-outlined">link</span> Link</button>
             <button class="toolbar-btn" id="btn-image" title="Insert Image"><span class="material-symbols-outlined">image</span> Image</button>
             <button class="toolbar-btn" id="btn-table" title="Insert Table"><span class="material-symbols-outlined">table_chart</span> Table</button>
+            <button class="toolbar-btn" id="btn-align-left" title="Left-align columns"><span class="material-symbols-outlined">format_align_left</span> Align</button>
+            <button class="toolbar-btn" id="btn-align-center" title="Center columns"><span class="material-symbols-outlined">format_align_center</span> Align</button>
+            <button class="toolbar-btn" id="btn-align-right" title="Right-align columns"><span class="material-symbols-outlined">format_align_right</span> Align</button>
+            <button class="toolbar-btn" id="btn-deflist" title="Definition List"><span class="material-symbols-outlined">menu_book</span> Def List</button>
         </div>
 <!-- Removed duplicate dark mode button -->
         <div class="toolbar-group">
@@ -384,15 +396,24 @@ Happy writing!"></textarea>
         document.getElementById('btn-italic').addEventListener('click', function() { insertMarkdown('*', '*'); });
         document.getElementById('btn-strike').addEventListener('click', function() { insertMarkdown('~~', '~~'); });
         document.getElementById('btn-code').addEventListener('click', function() { insertMarkdown('`', '`'); });
+        document.getElementById('btn-hr').addEventListener('click', insertHorizontalRule);
+        document.getElementById('btn-subscript').addEventListener('click', function() { insertMarkdown('~', '~'); });
+        document.getElementById('btn-superscript').addEventListener('click', function() { insertMarkdown('^', '^'); });
+        document.getElementById('btn-footnote').addEventListener('click', insertFootnoteSnippet);
         document.getElementById('btn-h1').addEventListener('click', function() { insertHeading(1); });
         document.getElementById('btn-h2').addEventListener('click', function() { insertHeading(2); });
         document.getElementById('btn-h3').addEventListener('click', function() { insertHeading(3); });
         document.getElementById('btn-bullet-list').addEventListener('click', function() { insertList('- '); });
         document.getElementById('btn-number-list').addEventListener('click', function() { insertList('1. '); });
         document.getElementById('btn-quote').addEventListener('click', function() { insertMarkdown('> ', ''); });
+        document.getElementById('btn-task').addEventListener('click', insertTaskItem);
         document.getElementById('btn-link').addEventListener('click', insertLink);
         document.getElementById('btn-image').addEventListener('click', insertImage);
         document.getElementById('btn-table').addEventListener('click', insertTable);
+        document.getElementById('btn-align-left').addEventListener('click', function() { setTableAlignment('left'); });
+        document.getElementById('btn-align-center').addEventListener('click', function() { setTableAlignment('center'); });
+        document.getElementById('btn-align-right').addEventListener('click', function() { setTableAlignment('right'); });
+        document.getElementById('btn-deflist').addEventListener('click', insertDefinitionList);
         document.getElementById('split-btn').addEventListener('click', function() { setViewMode('split'); });
         document.getElementById('editor-btn').addEventListener('click', function() { setViewMode('editor'); });
         document.getElementById('preview-btn').addEventListener('click', function() { setViewMode('preview'); });
@@ -792,14 +813,25 @@ Happy writing!"></textarea>
     function parseMarkdown(markdown) {
         let html = markdown;
 
+        // Footnotes: collect definitions like [^id]: text (+ indented continuations)
+        const footnoteDefs = {};
+        const usedFootnoteOrder = [];
+        html = html.replace(/^\[\^([^\]]+)\]:[ \t]+(.+)(?:\r?\n(?:(?:    |\t).+))*?/gm, function(match, id) {
+            const lines = match.split(/\r?\n/);
+            let first = lines[0].replace(/^\[\^[^\]]+\]:[ \t]+/, '');
+            const rest = lines.slice(1).map(l => l.replace(/^(?:    |\t)/, '')).join('\n');
+            footnoteDefs[id] = (first + (rest ? '\n' + rest : ''));
+            return '';
+        });
+
         // Handle escaped characters first
         html = html.replace(/\\([\\`\*_{}\[\]()#+\-.!|])/g, function(match, p1) { return '@@ESCAPED:' + p1.charCodeAt(0).toString(16) + '@@'; });
 
-        // Handle tables first
-        html = html.replace(/^\|(.+)\r?\n\|( *[-:]+ *\|)+.*\r?\n((\|.+\r?\n*)*)/gm, (match) => {
+        // Handle tables first (with alignment)
+        html = html.replace(/^\|(.+)\r?\n\|([ \t:-]+\|)+\s*\r?\n((?:\|.*\r?\n?)*)/gm, (match) => {
             const lines = match.trim().split('\n');
             const headerLine = lines.shift();
-            lines.shift(); // Remove separator line
+            const separatorLine = lines.shift() || '';
 
             // A small helper to parse inline markdown within cells
             const parseCell = (cell) => {
@@ -808,14 +840,28 @@ Happy writing!"></textarea>
                     .replace(/\*(.*?)\*/g, '<em>$1</em>')
                     .replace(/~~(.*?)~~/g, '<del>$1</del>')
                     .replace(/`([^`]+)`/g, '<code>$1</code>')
-                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+                    .replace(/\^([^\^]+)\^/g, '<sup>$1</sup>')
+                    .replace(/~([^~]+)~/g, '<sub>$1</sub>');
             };
+
+            // Determine alignment per column based on separator line
+            const sepCells = separatorLine.split('|').slice(1, -1).map(s => s.trim());
+            const alignClasses = sepCells.map(s => {
+                const left = s.startsWith(':');
+                const right = s.endsWith(':');
+                if (left && right) return 'align-center';
+                if (right) return 'align-right';
+                if (left) return 'align-left';
+                return '';
+            });
 
             const headerCells = headerLine.split('|').slice(1, -1).map(parseCell);
             
             let tableHtml = '<table><thead><tr>';
-            headerCells.forEach(cell => {
-                tableHtml += `<th>${cell}</th>`;
+            headerCells.forEach((cell, idx) => {
+                const cls = alignClasses[idx] || '';
+                tableHtml += cls ? `<th class="${cls}">${cell}</th>` : `<th>${cell}</th>`;
             });
             tableHtml += '</tr></thead><tbody>';
 
@@ -823,8 +869,9 @@ Happy writing!"></textarea>
                 if (!rowStr) return;
                 const rowCells = rowStr.split('|').slice(1, -1).map(parseCell);
                 tableHtml += '<tr>';
-                rowCells.forEach(cell => {
-                    tableHtml += `<td>${cell}</td>`;
+                rowCells.forEach((cell, idx) => {
+                    const cls = alignClasses[idx] || '';
+                    tableHtml += cls ? `<td class="${cls}">${cell}</td>` : `<td>${cell}</td>`;
                 });
                 tableHtml += '</tr>';
             });
@@ -877,18 +924,23 @@ Happy writing!"></textarea>
             .replace(/^### (.*$)/gm, '<h3>$1</h3>')
             .replace(/^## (.*$)/gm, '<h2>$1</h2>')
             .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+            // Horizontal rules (---, ***, ___ on their own line)
+            .replace(/^(?:---|\*\*\*|___)\s*$/gm, '<hr>')
             
             // Bold, italic, etc. (will now only apply outside of tables)
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')
             .replace(/~~(.*?)~~/g, '<del>$1</del>')
+            // Superscript and Subscript
+            .replace(/\^([^\^\n]+)\^/g, '<sup>$1</sup>')
+            .replace(/~([^~\n]+)~/g, '<sub>$1</sub>')
             
             // Code blocks
             .replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => `<pre><code>${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`)
             .replace(/`([^`]+)`/g, '<code>$1</code>')
             
             // Links & Images
-            .replace(/!\[([^\]]*)\]\(([^\s\)]+)(?:\s+"([^"]*)")?\)/g, function(match, alt, url, title) {
+            .replace(/!\[([^\]]*)\]\(([^)]+?)(?:\s+"([^"]*)")?\)/g, function(match, alt, url, title) {
                 let info = (alt && alt.trim()) || (title && title.trim());
                 let imgTag = `<img src="${url}" alt="${alt || ''}"${title ? ` title="${title}"` : ''}>`;
                 if (info) {
@@ -896,13 +948,41 @@ Happy writing!"></textarea>
                 } else {
                     return imgTag;
                 }
+            })
+            .replace(/\[([^\]]+)\]\(([^)]+?)(?:\s+"([^"]*)")?\)/g, function(match, text, url, title) {
+                const t = title ? ` title="${title}"` : '';
+                return `<a href="${url}"${t}>${text}</a>`;
+            })
+            // Autolink bare URLs
+            .replace(/(^|[^"'=])(https?:\/\/[\w\-._~:\/?#\[\]@!$&'()*+,;=%]+)/g, function(m, lead, url) {
+                return `${lead}<a href="${url}">${url}</a>`;
+            })
+            // Autolink emails
+            .replace(/(^|\s)([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/g, function(m, lead, email) {
+                return `${lead}<a href="mailto:${email}">${email}</a>`;
             });
 
+        // Definition lists (term then one/more lines beginning with ':')
+        html = html.replace(/(^|\n)([^\n]+)\n(:[ \t].+(?:\n:[ \t].+)*)/g, function(match, leading, term, defs) {
+            if (/^\s*#/.test(term) || /^\s*([\-*+]|\d+\.)\s/.test(term)) return match;
+            const dd = defs.split(/\n/).map(d => d.replace(/^:[ \t]?/, '')).join(' ');
+            return `${leading}<dl><dt>${term.trim()}</dt><dd>${dd.trim()}</dd></dl>`;
+        });
+
         // A more robust list processing logic that handles blocks directly.
-        // Unordered lists
+        // Unordered lists (supports task list items like - [ ] and - [x])
         html = html.replace(/((?:^[\*\-\+] .*$\r?\n?)+)/gm, (match) => {
-            const items = match.trim().split('\n').map(line => `<li>${line.substring(2)}</li>`).join('');
-            return `<ul>${items}</ul>`;
+            const items = match.trim().split('\n').map(line => {
+                let content = line.substring(2);
+                const task = content.match(/^\[( |x|X)\][ \t]+(.*)$/);
+                if (task) {
+                    const checked = /x/i.test(task[1]) ? ' checked' : '';
+                    const label = task[2];
+                    return `<li class="task-item"><input type="checkbox" disabled${checked}> ${label}</li>`;
+                }
+                return `<li>${content}</li>`;
+            }).join('');
+            return `<ul class="task-list">${items}</ul>`;
         });
 
         // Ordered lists
@@ -918,9 +998,9 @@ Happy writing!"></textarea>
         // Wrap in paragraphs and fix lists
         html = '<p>' + html.trim() + '</p>';
         
-        // Cleanup: Remove <p> tags that incorrectly wrap block elements like tables
-        html = html.replace(/<p>\s*(<(table|ul|ol|pre|blockquote|h[1-6]))/g, '$1');
-        html = html.replace(/(<\/(table|ul|ol|pre|blockquote|h[1-6])>)\s*<\/p>/g, '$1');
+        // Cleanup: Remove <p> tags that incorrectly wrap block elements like tables or hr
+        html = html.replace(/<p>\s*(<(table|ul|ol|pre|blockquote|h[1-6]|hr))/g, '$1');
+        html = html.replace(/(<\/(table|ul|ol|pre|blockquote|h[1-6])>|<hr>)\s*<\/p>/g, '$1');
 
         html = html.replace(/<\/p><p>(<li>.*?<\/li>)<\/p><p>/g, '<ul>$1</ul>');
         html = html.replace(/<\/li><br><li>/g, '</li><li>');
@@ -928,6 +1008,32 @@ Happy writing!"></textarea>
         // Fix empty paragraphs
         html = html.replace(/<p>\s*<\/p>/g, '');
         html = html.replace(/<p><br><\/p>/g, '');
+
+        // Footnote references [^id]
+        html = html.replace(/\[\^([^\]]+)\]/g, function(m, id) {
+            const idx = usedFootnoteOrder.indexOf(id);
+            if (idx === -1) usedFootnoteOrder.push(id);
+            const num = usedFootnoteOrder.indexOf(id) + 1;
+            return `<sup class="footnote-ref"><a href="#fn-${id}" id="fnref-${id}">${num}</a></sup>`;
+        });
+
+        if (usedFootnoteOrder.length > 0) {
+            let footHtml = '<section class="footnotes"><hr><ol>';
+            usedFootnoteOrder.forEach((id) => {
+                const def = footnoteDefs[id] || '';
+                const inner = def
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/~~(.*?)~~/g, '<del>$1</del>')
+                    .replace(/`([^`]+)`/g, '<code>$1</code>')
+                    .replace(/\^([^\^\n]+)\^/g, '<sup>$1</sup>')
+                    .replace(/~([^~\n]+)~/g, '<sub>$1</sub>')
+                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+                footHtml += `<li id="fn-${id}">${inner} <a href="#fnref-${id}" class="footnote-backref" aria-label="Back to content">↩</a></li>`;
+            });
+            footHtml += '</ol></section>';
+            html += footHtml;
+        }
 
         // Restore escaped characters
         html = html.replace(/@@ESCAPED:([0-9a-f]+)@@/gi, function(match, p1) { return String.fromCharCode(parseInt(p1, 16)); });
@@ -1185,6 +1291,97 @@ Happy writing!"></textarea>
         editor.value = editor.value.substring(0, start) + table + editor.value.substring(start);
         editor.selectionStart = editor.selectionEnd = start + table.length;
         editor.focus();
+        updatePreview();
+        updateStatusBar();
+    }
+
+    // Insert a footnote reference and scaffold definition at end
+    function insertFootnoteSnippet() {
+        // Generate simple id
+        const id = 'fn' + Math.floor(Math.random() * 10000).toString();
+        const start = editor.selectionStart;
+        const ref = `[^${id}]`;
+        editor.setRangeText(ref, editor.selectionStart, editor.selectionEnd, 'end');
+
+        // Append definition at end with a newline separator
+        const tail = editor.value.endsWith('\n') ? '' : '\n';
+        editor.value = editor.value + tail + `[^${id}]: Footnote text` + '\n';
+        updatePreview();
+        updateStatusBar();
+    }
+
+    // Insert a task list item (- [ ] ... or toggle to [x] if selection already is a task)
+    function insertTaskItem() {
+        const start = editor.selectionStart;
+        const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
+        const lineEnd = editor.value.indexOf('\n', start);
+        const endIdx = lineEnd === -1 ? editor.value.length : lineEnd;
+        const line = editor.value.substring(lineStart, endIdx);
+        let newLine;
+        const uncheckedRe = /^- \[ \] /;
+        const checkedRe = /^- \[x\] /i;
+        if (uncheckedRe.test(line)) {
+            newLine = line.replace(uncheckedRe, '- [x] ');
+        } else if (checkedRe.test(line)) {
+            newLine = line.replace(checkedRe, '- [ ] ');
+        } else {
+            newLine = '- [ ] ' + line;
+        }
+        editor.value = editor.value.substring(0, lineStart) + newLine + editor.value.substring(endIdx);
+        editor.selectionStart = editor.selectionEnd = Math.min(start + 6, editor.value.length);
+        updatePreview();
+        updateStatusBar();
+    }
+
+    // Adjust table alignment separator line of the nearest table around cursor
+    function setTableAlignment(mode) {
+        const cursor = editor.selectionStart;
+        const text = editor.value;
+        // Find table region around cursor by searching for a header line and separator
+        const before = text.lastIndexOf('\n|', cursor);
+        if (before === -1) return;
+        const after = text.indexOf('\n\n', before);
+        const blockEnd = after === -1 ? text.length : after + 1;
+        const block = text.substring(before + 1, blockEnd); // include first leading |
+        const lines = block.split('\n');
+        if (lines.length < 2) return;
+        const sepIdx = 1; // second line is the separator per our table insertion
+        const sep = lines[sepIdx];
+        if (!/^\|/.test(sep)) return;
+        const cells = sep.split('|');
+        for (let i = 1; i < cells.length - 1; i++) {
+            const raw = cells[i].trim().replace(/-/g, '-');
+            if (mode === 'center') {
+                cells[i] = ' :---: ';
+            } else if (mode === 'right') {
+                cells[i] = ' ---: ';
+            } else {
+                cells[i] = ' :--- ';
+            }
+        }
+        lines[sepIdx] = cells.join('|');
+        const newBlock = lines.join('\n');
+        editor.value = text.substring(0, before + 1) + newBlock + text.substring(blockEnd);
+        updatePreview();
+        updateStatusBar();
+    }
+
+    // Insert a simple definition list skeleton from current line
+    function insertDefinitionList() {
+        const start = editor.selectionStart;
+        const snippet = `\nTerm\n: Definition\n`;
+        editor.setRangeText(snippet, start, start, 'end');
+        updatePreview();
+        updateStatusBar();
+    }
+
+    // Insert a horizontal rule line
+    function insertHorizontalRule() {
+        const start = editor.selectionStart;
+        const ls = editor.value.lastIndexOf('\n', start - 1) + 1;
+        const prefix = ls === start ? '' : '\n';
+        const snippet = `${prefix}---\n`;
+        editor.setRangeText(snippet, start, start, 'end');
         updatePreview();
         updateStatusBar();
     }
