@@ -6,6 +6,9 @@ Project completed by 100% solo with moderate use of AI, templates and inspriatio
 Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (Bluesky) or lightingperson_2763@outlook.com.vn
 
 ## Changelogs:
+#### v2.1 (23/10/2025)
+We have updated those features for you and fixes bugs.\
+New feaures such as HR, Task, Align Table, Subscript and Superscript, and many more features. More features coming soon.\
 #### v2.0.5 (1/10/2025)
 Happy Halloween! We have updated those features for you and fixes bugs.\
 New changelogs and help layout.\
