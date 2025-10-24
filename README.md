@@ -6,6 +6,10 @@ Project completed by 100% solo with moderate use of AI, templates and inspriatio
 Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (Bluesky) or lightingperson_2763@outlook.com.vn
 
 ## Changelogs:
+#### v1.3 (25/10/2025)
+We have updated those features for you and fixes bugs, for legacy apps.\
+New feaures such as Find and Replace are added.\
+We discovered a major security vulnerability involving Cross-Site Scripting (XSS), which could be exploited for malicious purposes.
 #### v2.1 (23/10/2025)
 We have updated those features for you and fixes bugs.\
 New feaures such as HR, Task, Align Table, Subscript and Superscript, and many more features. More features coming soon.
