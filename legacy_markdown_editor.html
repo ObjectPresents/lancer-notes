@@ -312,6 +312,10 @@
             <button class="toolbar-btn icon-only" onclick="undo()" title="Undo"><span class="material-symbols-outlined">undo</span></button>
             <button class="toolbar-btn icon-only" onclick="redo()" title="Redo"><span class="material-symbols-outlined">redo</span></button>
         </div>
+
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="showFindReplace()" title="Find and Replace"><span class="material-symbols-outlined">find_replace</span> Find</button>
+        </div>
         
         <div class="toolbar-group">
             <button class="toolbar-btn icon-only" onclick="insertMarkdown('**', '**')" title="Bold"><span class="material-symbols-outlined">format_bold</span></button>
@@ -833,7 +837,7 @@ Happy writing!"></textarea>
 
     // Menu functions (placeholder implementations)
     function showAbout() {
-        alert('Markdown Editor v1.2\nA WordPad-like markdown editor with real-time preview.\n\nChangelogs: \nv1.2 Fix table format not working \nv1.1: Changed to new icons');
+        alert('Markdown Editor v1.3\nA WordPad-like markdown editor with real-time preview.\n\n⚠️ IMPORTANT NOTICE:\nv1.x series will be reaching end of support soon. Please prepare to migrate to v2.x for continued updates and support.\n\nChangelogs:\nv1.3: Final maintenance release - Added Find and Replace functionality\nv1.2: Fix table format not working\nv1.1: Changed to new icons');
     }
 
     function showEditMenu() {
@@ -846,6 +850,38 @@ Happy writing!"></textarea>
 
     function showHelp() {
         alert('Help:\n• Use ** for bold text\n• Use * for italic text\n• Use # for headers\n• Use - or * for lists\n• Use [text](url) for links\n• Use ![alt](url) for images');
+    }
+
+    // Find and Replace functionality
+    function showFindReplace() {
+        const findText = prompt('Enter text to find:');
+        if (findText) {
+            const replaceText = prompt('Enter text to replace with (Cancel for find-only):');
+            const content = editor.value;
+            
+            if (replaceText === null) {
+                // Find only
+                const position = content.indexOf(findText, editor.selectionEnd);
+                if (position !== -1) {
+                    editor.setSelectionRange(position, position + findText.length);
+                    editor.focus();
+                    updateStatus('Text found');
+                } else {
+                    updateStatus('Text not found');
+                }
+            } else {
+                // Find and replace
+                const newContent = content.replaceAll(findText, replaceText);
+                if (content !== newContent) {
+                    editor.value = newContent;
+                    updatePreview();
+                    updateStatusBar();
+                    updateStatus('Text replaced');
+                } else {
+                    updateStatus('Text not found');
+                }
+            }
+        }
     }
 
     // Initialize the editor when page loads
