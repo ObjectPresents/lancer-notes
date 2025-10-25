@@ -7,8 +7,9 @@ Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (
 
 ## Changelogs:
 #### v1.3.1 and v2.1.1 (25/10/2025)
-No major updates, as we do it to update v1.3.\
-New feature: Check for Updates (This was going to be included in v2.2, but because of v1.3 security patch, it have to be added)
+No major updates for v2.1.1, as we do it to update v1.3.\
+New feature: Check for Updates (This was going to be included in v2.2, but because of v1.3 security patch, it have to be added)\
+We patched the Cross-Site Scripting (XSS) security vulnerability as a result, and Security Mode turned ON by default.
 #### v1.3 (25/10/2025)
 We have updated those features for you and fixes bugs, for legacy apps.\
 New feaures such as Find and Replace are added.\
