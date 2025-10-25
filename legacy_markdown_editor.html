@@ -42,6 +42,25 @@
             background-color: #404040;
         }
 
+        /* Banner warning */
+        .warning-banner {
+            background-color: #ffd700;
+            color: #000;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            border-bottom: 2px solid #b8860b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .warning-banner .material-symbols-outlined {
+            font-size: 20px;
+            vertical-align: middle;
+        }
+
         /* Toolbar */
         .toolbar {
             background-color: #e0e0e0;
@@ -109,6 +128,11 @@
             border-radius: 3px;
             font-size: 12px;
             background-color: white;
+        }
+
+        /* Hide the verbose version text in the update button; show only icon */
+        #version-label {
+            display: none;
         }
 
         /* Main container */
@@ -294,6 +318,7 @@
     </style>
 </head>
 <body>
+    <div class="warning-banner"><span class="material-symbols-outlined">warning</span> End of Support Notice: This version will reach end of support on January 1st, 2028. Please plan to upgrade to v2.x before this date.</div>
     <div class="menu-bar">
         <div class="menu-item" onclick="showAbout()">File</div>
         <div class="menu-item" onclick="showEditMenu()">Edit</div>
@@ -349,6 +374,18 @@
                 <button onclick="setViewMode('preview')" id="preview-btn">Preview</button>
             </div>
         </div>
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="toggleSecurity()" id="security-btn" title="Toggle XSS Protection">
+                <span class="material-symbols-outlined">security</span>
+                <span id="security-status">Security: On</span>
+            </button>
+        </div>
+        <div class="toolbar-group">
+            <button class="toolbar-btn" onclick="checkForUpdates()" title="Check for Updates">
+                <span class="material-symbols-outlined">system_update</span>
+                <span id="version-label">v1.3.1</span>
+            </button>
+        </div>
     </div>
 
     <div class="main-container" id="main-container">
@@ -402,6 +439,9 @@ Happy writing!"></textarea>
     let undoStack = [];
     let redoStack = [];
     let currentViewMode = 'split';
+    let securityEnabled = true; // XSS protection state
+    const CURRENT_VERSION = '1.3.1';
+    const GITHUB_REPO = 'ObjectPresents/lancer-notes';
 
     // Initialize the editor
     function initEditor() {
@@ -427,36 +467,159 @@ Happy writing!"></textarea>
         updateStatusBar();
     }
 
-    // Markdown parsing function - converts markdown to HTML
+    // Enhanced security module
+    const Security = {
+        // DOMPurify-inspired sanitizer
+        sanitize: function(html) {
+            if (!securityEnabled) return html;
+            
+            const div = document.createElement('div');
+            div.textContent = html;
+            return div.innerHTML;
+        },
+
+        // Allowed HTML tags when security is disabled
+        allowedTags: new Set([
+            'p', 'div', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+            'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'em',
+            'strong', 'del', 'a', 'img', 'br', 'table', 'thead',
+            'tbody', 'tr', 'th', 'td'
+        ]),
+
+        // Safe HTML parser when security is disabled
+        parseSafeHtml: function(html) {
+            if (securityEnabled) return this.sanitize(html);
+            
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            const sanitizeNode = (node) => {
+                if (node.nodeType === 3) return node; // Text node is safe
+                if (node.nodeType !== 1) return null; // Remove non-element nodes
+                
+                if (!this.allowedTags.has(node.tagName.toLowerCase())) {
+                    return document.createTextNode(node.textContent);
+                }
+                
+                // Clean attributes
+                Array.from(node.attributes).forEach(attr => {
+                    if (!this.isValidAttribute(attr.name, attr.value)) {
+                        node.removeAttribute(attr.name);
+                    }
+                });
+                
+                // Recursively clean children
+                Array.from(node.childNodes)
+                    .forEach(child => {
+                        const cleanChild = sanitizeNode(child);
+                        if (cleanChild && child !== cleanChild) {
+                            node.replaceChild(cleanChild, child);
+                        }
+                    });
+                
+                return node;
+            };
+            
+            const clean = sanitizeNode(doc.body);
+            return clean.innerHTML;
+        },
+
+        isValidAttribute: function(name, value) {
+            const safeAttrs = new Set(['href', 'src', 'alt', 'title']);
+            if (!safeAttrs.has(name)) return false;
+            
+            if (name === 'href' || name === 'src') {
+                return this.isValidUrl(value);
+            }
+            
+            return true;
+        },
+
+        isValidUrl: function(url) {
+            try {
+                const urlObj = new URL(url);
+                return ['http:', 'https:', 'mailto:'].includes(urlObj.protocol);
+            } catch {
+                return false;
+            }
+        }
+    };
+
+    function toggleSecurity() {
+        if (securityEnabled) {
+            const confirmed = confirm(
+                '⚠️ WARNING: Disabling XSS protection may expose you to security risks.\n\n' +
+                'Only disable this if you trust the markdown content and need to render specific HTML.\n\n' +
+                'Do you want to continue?'
+            );
+            if (!confirmed) return;
+        }
+        
+        securityEnabled = !securityEnabled;
+        const btn = document.getElementById('security-btn');
+        const status = document.getElementById('security-status');
+        
+        if (securityEnabled) {
+            btn.style.backgroundColor = '';
+            status.textContent = 'Security: On';
+        } else {
+            btn.style.backgroundColor = '#ff6b6b';
+            status.textContent = 'Security: Off';
+        }
+        
+        updatePreview(); // Refresh preview with new security settings
+    }
+
+    // Alias for backward compatibility
+    function escapeHtml(text) {
+        return Security.sanitize(text);
+    }
+
+    // Alias for backward compatibility
+    function isValidUrl(url) {
+        return Security.isValidUrl(url);
+    }
+
+    // Markdown parsing function - converts markdown to HTML with XSS protection
     function parseMarkdown(markdown) {
         let html = markdown
             // Headers
-            .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-            .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-            .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+            .replace(/^### (.*$)/gm, (match, content) => `<h3>${Security.sanitize(content)}</h3>`)
+            .replace(/^## (.*$)/gm, (match, content) => `<h2>${Security.sanitize(content)}</h2>`)
+            .replace(/^# (.*$)/gm, (match, content) => `<h1>${Security.sanitize(content)}</h1>`)
             
-            // Bold and italic
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/~~(.*?)~~/g, '<del>$1</del>')
+            // Bold and italic - escape content
+            .replace(/\*\*(.*?)\*\*/g, (match, content) => `<strong>${escapeHtml(content)}</strong>`)
+            .replace(/\*(.*?)\*/g, (match, content) => `<em>${escapeHtml(content)}</em>`)
+            .replace(/~~(.*?)~~/g, (match, content) => `<del>${escapeHtml(content)}</del>`)
             
-            // Code blocks
-            .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            // Code blocks - escape content
+            .replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => `<pre><code>${escapeHtml(code)}</code></pre>`)
+            .replace(/`([^`]+)`/g, (match, content) => `<code>${escapeHtml(content)}</code>`)
             
-            // Links
-            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+            // Links - validate URLs and escape content
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+                if (isValidUrl(url)) {
+                    return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`;
+                }
+                return escapeHtml(match); // Return escaped original if URL is invalid
+            })
             
-            // Images
-            .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
+            // Images - validate URLs and escape alt text
+            .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, url) => {
+                if (isValidUrl(url)) {
+                    return `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" />`;
+                }
+                return escapeHtml(match); // Return escaped original if URL is invalid
+            })
             
-            // Lists
-            .replace(/^\s*\* (.+)$/gm, '<li>$1</li>')
-            .replace(/^\s*- (.+)$/gm, '<li>$1</li>')
-            .replace(/^\s*\d+\. (.+)$/gm, '<li>$1</li>')
+            // Lists - escape content
+            .replace(/^\s*\* (.+)$/gm, (match, content) => `<li>${escapeHtml(content)}</li>`)
+            .replace(/^\s*- (.+)$/gm, (match, content) => `<li>${escapeHtml(content)}</li>`)
+            .replace(/^\s*\d+\. (.+)$/gm, (match, content) => `<li>${escapeHtml(content)}</li>`)
             
-            // Blockquotes
-            .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+            // Blockquotes - escape content
+            .replace(/^> (.+)$/gm, (match, content) => `<blockquote>${escapeHtml(content)}</blockquote>`)
             
             // Line breaks
             .replace(/\n\n/g, '</p><p>')
@@ -474,24 +637,30 @@ Happy writing!"></textarea>
         return html;
         
     }
-    // Markdown parsing function - converts markdown to HTML
-    function parseMarkdown(markdown) {
+
+    // Enhanced markdown parsing with table support and XSS protection
+    function parseMarkdownWithTables(markdown) {
         let html = markdown;
 
-        // Handle tables first
+        // Handle tables first with XSS protection
         html = html.replace(/^\|(.+)\r?\n\|( *[-:]+ *\|)+.*\r?\n((\|.+\r?\n*)*)/gm, (match) => {
             const lines = match.trim().split('\n');
             const headerLine = lines.shift();
             lines.shift(); // Remove separator line
 
-            // A small helper to parse inline markdown within cells
+            // A secure helper to parse inline markdown within cells
             const parseCell = (cell) => {
-                return cell.trim()
+                return escapeHtml(cell.trim())
                     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                     .replace(/\*(.*?)\*/g, '<em>$1</em>')
                     .replace(/~~(.*?)~~/g, '<del>$1</del>')
                     .replace(/`([^`]+)`/g, '<code>$1</code>')
-                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+                        if (isValidUrl(url)) {
+                            return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`;
+                        }
+                        return escapeHtml(match);
+                    });
             };
 
             const headerCells = headerLine.split('|').slice(1, -1).map(parseCell);
@@ -516,37 +685,8 @@ Happy writing!"></textarea>
             return `\n${tableHtml}\n`; // Add newlines to help with paragraph separation
         });
 
-        // Original parsing logic continues here...
-        html = html
-            // Headers
-            .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-            .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-            .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-            
-            // Bold, italic, etc. (will now only apply outside of tables)
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/~~(.*?)~~/g, '<del>$1</del>')
-            
-            // Code blocks
-            .replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => `<pre><code>${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`)
-            .replace(/`([^`]+)`/g, '<code>$1</code>')
-            
-            // Links & Images
-            .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
-            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-            
-            // Lists
-            .replace(/^\s*\* (.+)$/gm, '<li>$1</li>')
-            .replace(/^\s*- (.+)$/gm, '<li>$1</li>')
-            .replace(/^\s*\d+\. (.+)$/gm, '<li>$1</li>')
-            
-            // Blockquotes
-            .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-            
-            // Line breaks and paragraphs
-            .replace(/\n\n/g, '</p><p>')
-            .replace(/\n/g, '<br>');
+        // Apply the main parsing logic
+        html = parseMarkdown(html);
 
         // Wrap in paragraphs and fix lists
         html = '<p>' + html.trim() + '</p>';
@@ -567,7 +707,7 @@ Happy writing!"></textarea>
     // Update the preview pane with parsed markdown
     function updatePreview() {
         const markdownText = editor.value;
-        const htmlContent = parseMarkdown(markdownText);
+        const htmlContent = parseMarkdownWithTables(markdownText);
         preview.innerHTML = htmlContent;
     }
 
@@ -743,19 +883,29 @@ Happy writing!"></textarea>
 
     function insertLink() {
         const url = prompt('Enter URL:');
-        if (url) {
+        if (url && isValidUrl(url)) {
             const text = prompt('Enter link text:') || url;
-            insertMarkdown(`[${text}](${url})`, '');
-            editor.selectionStart = editor.selectionEnd = editor.selectionStart + `[${text}](${url})`.length;
+            // Sanitize user input
+            const sanitizedText = escapeHtml(text);
+            const sanitizedUrl = escapeHtml(url);
+            insertMarkdown(`[${sanitizedText}](${sanitizedUrl})`, '');
+            editor.selectionStart = editor.selectionEnd = editor.selectionStart + `[${sanitizedText}](${sanitizedUrl})`.length;
+        } else if (url) {
+            alert('Invalid URL. Please enter a valid HTTP, HTTPS, or mailto URL.');
         }
     }
 
     function insertImage() {
         const url = prompt('Enter image URL:');
-        if (url) {
+        if (url && isValidUrl(url)) {
             const alt = prompt('Enter alt text:') || 'Image';
-            insertMarkdown(`![${alt}](${url})`, '');
-             editor.selectionStart = editor.selectionEnd = editor.selectionStart + `![${alt}](${url})`.length;
+            // Sanitize user input
+            const sanitizedAlt = escapeHtml(alt);
+            const sanitizedUrl = escapeHtml(url);
+            insertMarkdown(`![${sanitizedAlt}](${sanitizedUrl})`, '');
+            editor.selectionStart = editor.selectionEnd = editor.selectionStart + `![${sanitizedAlt}](${sanitizedUrl})`.length;
+        } else if (url) {
+            alert('Invalid URL. Please enter a valid HTTP or HTTPS URL.');
         }
     }
 
@@ -837,7 +987,7 @@ Happy writing!"></textarea>
 
     // Menu functions (placeholder implementations)
     function showAbout() {
-        alert('Markdown Editor v1.3\nA WordPad-like markdown editor with real-time preview.\n\n⚠️ IMPORTANT NOTICE:\nv1.x series will be reaching end of support soon. Please prepare to migrate to v2.x for continued updates and support.\n\nChangelogs:\nv1.3: Final maintenance release - Added Find and Replace functionality\nv1.2: Fix table format not working\nv1.1: Changed to new icons');
+        alert('Markdown Editor v1.3.1\nA WordPad-like markdown editor with real-time preview.\n\n⚠️ IMPORTANT NOTICE:\nv1.x series will be reaching end of support soon. Please prepare to migrate to v2.x for continued updates and support.\n\nChangelogs:\nv1.3.1: Security update - Fixed Cross-Site Scripting (XSS) vulnerabilities\nv1.3: Final maintenance release - Added Find and Replace functionality\nv1.2: Fix table format not working\nv1.1: Changed to new icons');
     }
 
     function showEditMenu() {
@@ -884,8 +1034,66 @@ Happy writing!"></textarea>
         }
     }
 
-    // Initialize the editor when page loads
-    window.addEventListener('load', initEditor);
+    // Update checker
+    async function checkForUpdates() {
+        try {
+            const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`);
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch updates');
+            }
+
+            const latestVersion = data.tag_name.replace('v', '');
+            const currentParts = CURRENT_VERSION.split('.').map(Number);
+            const latestParts = latestVersion.split('.').map(Number);
+
+            // Compare versions
+            let hasUpdate = false;
+            for (let i = 0; i < 3; i++) {
+                if (latestParts[i] > currentParts[i]) {
+                    hasUpdate = true;
+                    break;
+                } else if (latestParts[i] < currentParts[i]) {
+                    break;
+                }
+            }
+
+            if (hasUpdate) {
+                const shouldUpdate = confirm(
+                    `A new version (${latestVersion}) is available!\n\n` +
+                    `Current version: ${CURRENT_VERSION}\n` +
+                    `What's new:\n${data.body}\n\n` +
+                    'Would you like to visit the download page?'
+                );
+                
+                if (shouldUpdate) {
+                    window.open(data.html_url, '_blank');
+                }
+            }
+        } catch (error) {
+            console.error('Error checking for updates:', error);
+        }
+    }
+
+    // Initialize the editor, set version label (hidden) and update button tooltip, then check for updates when page loads
+    window.addEventListener('load', () => {
+        initEditor();
+        // Populate version label safely (fallback to CURRENT_VERSION)
+        try {
+            const versionLabel = document.getElementById('version-label');
+            const updateBtn = document.querySelector('button[onclick="checkForUpdates()"]');
+            if (versionLabel) versionLabel.textContent = 'v' + CURRENT_VERSION;
+            // Update the button's title to include version so users can hover the icon to see it
+            if (updateBtn) {
+                updateBtn.title = `Check for Updates — v${CURRENT_VERSION}`;
+                updateBtn.setAttribute('aria-label', `Check for Updates, current version ${CURRENT_VERSION}`);
+            }
+        } catch (e) {
+            console.warn('Could not set version label', e);
+        }
+        checkForUpdates();
+    });
 </script>
 </body>
 </html>

@@ -182,6 +182,9 @@
         <div class="toolbar-group">
             <button class="toolbar-btn icon-only" id="btn-darkmode" title="Toggle Dark Mode"><span class="material-symbols-outlined">dark_mode</span></button>
         </div>
+        <div class="toolbar-group">
+            <button class="toolbar-btn" id="btn-check-updates" title="Check for Updates"><span class="material-symbols-outlined">system_update</span> Updates</button>
+        </div>
     </div>
 
     <div class="main-container" id="main-container">
@@ -351,6 +354,10 @@ Happy writing!"></textarea>
     let undoStack = [];
     let redoStack = [];
     let currentViewMode = 'split';
+    
+    // Version information
+    const CURRENT_VERSION = '2.1.1';
+    const GITHUB_RELEASES_API = 'https://api.github.com/repos/ObjectPresents/lancer-notes/releases/latest';
 
     // Toggle dark mode
     function toggleDarkMode() {
@@ -1530,6 +1537,67 @@ Happy writing!"></textarea>
             });
         }
     });
+
+    // Check for Updates functionality
+    document.getElementById('btn-check-updates').addEventListener('click', checkForUpdates);
+
+    // Check for Updates functionality
+    async function checkForUpdates() {
+        const updateBtn = document.getElementById('btn-check-updates');
+        const originalText = updateBtn.innerHTML;
+        
+        // Show loading state
+        updateBtn.innerHTML = '<span class="material-symbols-outlined">refresh</span> Checking...';
+        updateBtn.disabled = true;
+        
+        try {
+            const response = await fetch(GITHUB_RELEASES_API);
+            if (!response.ok) {
+                throw new Error('Failed to fetch release information');
+            }
+            
+            const data = await response.json();
+            const latestVersion = data.tag_name.replace('v', ''); // Remove 'v' prefix
+            
+            // Compare versions
+            if (compareVersions(CURRENT_VERSION, latestVersion) < 0) {
+                // Update available
+                const updateMessage = `A new version is available!\n\nCurrent version: v${CURRENT_VERSION}\nLatest version: v${latestVersion}\n\nPlease visit the releases page to download the update:\n${data.html_url}`;
+                customAlert(updateMessage, () => {
+                    // Open releases page in new tab
+                    window.open(data.html_url, '_blank');
+                });
+            } else {
+                // No update available
+                customAlert(`You are running the latest version!\n\nCurrent version: v${CURRENT_VERSION}\nLatest version: v${latestVersion}`);
+            }
+        } catch (error) {
+            console.error('Error checking for updates:', error);
+            customAlert('Failed to check for updates. Please check your internet connection and try again.');
+        } finally {
+            // Restore button state
+            updateBtn.innerHTML = originalText;
+            updateBtn.disabled = false;
+        }
+    }
+    
+    // Compare version strings (returns -1 if v1 < v2, 0 if equal, 1 if v1 > v2)
+    function compareVersions(v1, v2) {
+        const parts1 = v1.split('.').map(Number);
+        const parts2 = v2.split('.').map(Number);
+        
+        const maxLength = Math.max(parts1.length, parts2.length);
+        
+        for (let i = 0; i < maxLength; i++) {
+            const part1 = parts1[i] || 0;
+            const part2 = parts2[i] || 0;
+            
+            if (part1 < part2) return -1;
+            if (part1 > part2) return 1;
+        }
+        
+        return 0;
+    }
 
     // Initialize the editor when page loads
     window.addEventListener('load', initEditor);
