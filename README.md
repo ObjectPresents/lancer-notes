@@ -6,6 +6,9 @@ Project completed by 100% solo with moderate use of AI, templates and inspriatio
 Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (Bluesky) or lightingperson_2763@outlook.com.vn
 
 ## Changelogs:
+#### v1.3.1 and v2.1.1 (25/10/2025)
+No major updates, as we do it to update v1.3.\
+New feature: Check for Updates (This was going to be included in v2.2, but because of v1.3 security patch, it have to be added)
 #### v1.3 (25/10/2025)
 We have updated those features for you and fixes bugs, for legacy apps.\
 New feaures such as Find and Replace are added.\
