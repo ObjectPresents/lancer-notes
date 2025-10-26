@@ -6,6 +6,16 @@ Project completed by 100% solo with moderate use of AI, templates and inspriatio
 Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (Bluesky) or lightingperson_2763@outlook.com.vn
 
 ## Changelogs:
+#### v2.1.2 (26/10/2025)
+- Small fixes and polish for v2.1.2:
+  - Fix dark-mode styling for the undo/redo history dropdown
+  - Keep history dropdown visible when hovering between the toolbar button and the menu
+  - Move changelogs to a local view and ensure the popup respects dark mode
+  - Improved undo/redo system with reduced lag (250ms throttle)
+  - Fixed changelog formatting and removed duplicate entries
+  - Renamed README.md to CHANGELOG.md for better organization
+  - Bumped application version to v2.1.2
+
 #### v1.3.1 and v2.1.1 (25/10/2025)
 No major updates for v2.1.1, as we do it to update v1.3.\
 New feature: Check for Updates (This was going to be included in v2.2, but because of v1.3 security patch, it have to be added)\
