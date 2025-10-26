@@ -307,7 +307,9 @@ Happy writing!"></textarea>
         <span style="font-weight:bold;">Changelogs</span>
         <button id="changelog-popup-close" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">&times;</button>
       </div>
-      <iframe src="https://objectpresents.github.io/lancer-notes/" style="width:100%;height:calc(100% - 44px);border:none;background:#fff;"></iframe>
+            <div id="changelog-content" class="preview-content" style="width:100%;height:calc(100% - 44px);border:none;overflow:auto;padding:16px;">
+                <!-- Local changelogs will be injected here via JS (parsed from markdown) -->
+            </div>
     </div>
 
 <input type="file" id="file-input" class="hidden-file-input" accept=".md,.txt,.text" />
@@ -353,11 +355,73 @@ Happy writing!"></textarea>
     let currentFile = null;
     let undoStack = [];
     let redoStack = [];
+    let lastUndoValue = '';
+    let undoTimer = null;
+    const UNDO_STACK_LIMIT = 100;
+    let lastUndoSaveTime = 0;
+    let undoThrottleMs = 250; // Reduced throttle time for better responsiveness
     let currentViewMode = 'split';
     
     // Version information
-    const CURRENT_VERSION = '2.1.1';
+    const CURRENT_VERSION = '2.1.2';
     const GITHUB_RELEASES_API = 'https://api.github.com/repos/ObjectPresents/lancer-notes/releases/latest';
+        // Local changelog markdown (sourced from README.md 'Changelogs' section)
+        const LOCAL_CHANGELOG_MD = `
+
+## v2.1.2 (26/10/2025)
+- Small fixes and polish for v2.1.2:
+  - Fix dark-mode styling for the undo/redo history dropdown
+  - Keep history dropdown visible when hovering between the toolbar button and the menu
+  - Move changelogs to a local view and ensure the popup respects dark mode
+  - Improved undo/redo system with reduced lag (250ms throttle)
+  - Fixed changelog formatting and removed duplicate entries
+  - Renamed README.md to CHANGELOG.md for better organization
+  - Bumped application version to v2.1.2
+
+## v2.1.1 (25/10/2025)
+No major features; maintenance and polish:
+- Added "Check for Updates" feature
+
+### v1.3.1 (25/10/2025)
+- Security patch (XSS) applied in v1.3.1 only.
+    - Patched a Cross-Site Scripting (XSS) vulnerability that affected older code paths.
+    - Security Mode was enabled as part of that v1.3.1 patch to mitigate risk.
+
+### v1.3 (25/10/2025)
+- Improvements and bug fixes for legacy apps.
+    - Added Find and Replace.
+
+### v2.1 (23/10/2025)
+- New editor features and quality-of-life improvements.
+    - HR, Task items, Table alignment, Subscript, Superscript, and more.
+
+### v2.0.5 (01/10/2025)
+- UI and layout updates; help/changelog layouts improved.
+    - Various dark-mode fixes.
+
+### v2.0.4 (25/09/2025)
+- Popup UI changed to be modular and centered; escaping and list fixes.
+
+### v2.0.3 (24/09/2025)
+- Added regex search/replace with flags and preview highlighting.
+
+### v2.0.2 (21/09/2025)
+- Find and Replace support.
+
+### v2.0.1 (19/09/2025)
+- Added support for .txt files; fixed split-mode resize bug.
+
+### v2.0 (18/09/2025)
+- Major internal restructuring.
+
+### v1.2 (17/09/2025)
+- Fixed table formatting issues.
+
+### v1.1 (16/09/2025)
+- New icon design and minor bug fixes.
+
+### v1.0 (14/01/2024)
+- Original Markdown Editor (forked from Lancer Fan Club Forums).`;
 
     // Toggle dark mode
     function toggleDarkMode() {
@@ -380,10 +444,10 @@ Happy writing!"></textarea>
             document.body.classList.add('dark-mode');
         }
         // Set up event listeners
-        editor.addEventListener('input', function() {
+        editor.addEventListener('input', function(e) {
             updatePreview();
             updateStatusBar();
-            saveToUndoStack();
+            saveToUndoStack(e);
         });
 
         editor.addEventListener('keydown', function(e) {
@@ -397,8 +461,16 @@ Happy writing!"></textarea>
         document.getElementById('btn-new').addEventListener('click', newFile);
         document.getElementById('btn-open').addEventListener('click', openFile);
         document.getElementById('btn-save').addEventListener('click', saveFile);
-        document.getElementById('btn-undo').addEventListener('click', undo);
-        document.getElementById('btn-redo').addEventListener('click', redo);
+    const undoBtn = document.getElementById('btn-undo');
+    const redoBtn = document.getElementById('btn-redo');
+    undoBtn.addEventListener('click', undo);
+    redoBtn.addEventListener('click', redo);
+    // Show history dropdown on hover
+    undoBtn.addEventListener('mouseenter', function() { showHistoryDropdown('undo', undoBtn); });
+    redoBtn.addEventListener('mouseenter', function() { showHistoryDropdown('redo', redoBtn); });
+    // Remove dropdown on mouseleave (with small delay to allow click)
+    undoBtn.addEventListener('mouseleave', function() { setTimeout(() => { const d = document.getElementById('undo-history-dropdown'); if (d) d.remove(); }, 300); });
+    redoBtn.addEventListener('mouseleave', function() { setTimeout(() => { const d = document.getElementById('redo-history-dropdown'); if (d) d.remove(); }, 300); });
         document.getElementById('btn-bold').addEventListener('click', function() { insertMarkdown('**', '**'); });
         document.getElementById('btn-italic').addEventListener('click', function() { insertMarkdown('*', '*'); });
         document.getElementById('btn-strike').addEventListener('click', function() { insertMarkdown('~~', '~~'); });
@@ -1167,12 +1239,144 @@ Happy writing!"></textarea>
     }
 
     // Undo/Redo functionality
-    function saveToUndoStack() {
-        undoStack.push(editor.value);
-        if (undoStack.length > 50) {
-            undoStack.shift();
+// Helper to summarize a state for dropdown
+function summarizeState(text) {
+    let firstLine = text.split('\n')[0];
+    if (firstLine.length > 40) firstLine = firstLine.slice(0, 37) + '...';
+    return firstLine || '[Empty]';
+}
+
+// Create and show history dropdown
+function showHistoryDropdown(type, anchorBtn) {
+    let stack = type === 'undo' ? undoStack : redoStack;
+    if (!stack.length) return;
+    const maxItems = 15;
+    const items = stack.slice(-maxItems).map(summarizeState);
+    let dropdown = document.getElementById(type + '-history-dropdown');
+    if (dropdown) dropdown.remove();
+    dropdown = document.createElement('div');
+    dropdown.id = type + '-history-dropdown';
+    dropdown.style.position = 'absolute';
+    dropdown.style.zIndex = 2000;
+    dropdown.style.background = document.body.classList.contains('dark-mode') ? '#23272a' : 'white';
+    dropdown.style.border = document.body.classList.contains('dark-mode') ? '1px solid #444' : '1px solid #ccc';
+    dropdown.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+    dropdown.style.fontSize = '13px';
+    dropdown.style.minWidth = '220px';
+    dropdown.style.maxHeight = '320px';
+    dropdown.style.overflowY = 'auto';
+    dropdown.style.cursor = 'pointer';
+    dropdown.style.padding = '4px 0';
+    dropdown.style.color = document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#222';
+    // Position below anchorBtn
+    const rect = anchorBtn.getBoundingClientRect();
+    dropdown.style.left = rect.left + 'px';
+    dropdown.style.top = (rect.bottom + window.scrollY) + 'px';
+    items.forEach((summary, idx) => {
+        const item = document.createElement('div');
+        item.textContent = (stack.length - maxItems + idx + 1) + '. ' + summary;
+        item.style.padding = '4px 12px';
+    item.style.borderBottom = document.body.classList.contains('dark-mode') ? '1px solid #444' : '1px solid #eee';
+    item.onmouseenter = () => { item.style.background = document.body.classList.contains('dark-mode') ? '#2d3136' : '#f0f0f0'; };
+    item.onmouseleave = () => { item.style.background = document.body.classList.contains('dark-mode') ? '#23272a' : 'white'; };
+        item.onclick = () => {
+            if (type === 'undo') {
+                // Jump to selected undo state
+                const targetIdx = stack.length - maxItems + idx;
+                if (targetIdx >= 0 && targetIdx < stack.length) {
+                    // Move all newer states to redoStack
+                    while (undoStack.length > targetIdx + 1) {
+                        redoStack.push(undoStack.pop());
+                    }
+                    editor.value = undoStack[undoStack.length - 1];
+                    updatePreview();
+                    updateStatusBar();
+                    lastUndoValue = editor.value;
+                }
+            } else {
+                // Jump to selected redo state
+                const targetIdx = stack.length - maxItems + idx;
+                if (targetIdx >= 0 && targetIdx < stack.length) {
+                    // Move all older states to undoStack
+                    while (redoStack.length > targetIdx + 1) {
+                        undoStack.push(redoStack.pop());
+                    }
+                    editor.value = redoStack[redoStack.length - 1];
+                    updatePreview();
+                    updateStatusBar();
+                    lastUndoValue = editor.value;
+                }
+            }
+            dropdown.remove();
+        };
+        dropdown.appendChild(item);
+    });
+    document.body.appendChild(dropdown);
+    // Keep dropdown visible while hovering the anchor button or the dropdown itself.
+    // Close when both are left, or on click outside. Small delay prevents flicker when moving between button and menu.
+    let closeTimeout = null;
+    const scheduleClose = () => {
+        if (closeTimeout) clearTimeout(closeTimeout);
+        closeTimeout = setTimeout(() => {
+            try {
+                if (!anchorBtn.matches(':hover') && !dropdown.matches(':hover')) {
+                    if (dropdown) dropdown.remove();
+                    document.removeEventListener('mousedown', outsideHandler);
+                }
+            } catch (err) { /* element may be gone */ }
+        }, 160);
+    };
+    const cancelClose = () => { if (closeTimeout) { clearTimeout(closeTimeout); closeTimeout = null; } };
+
+    const outsideHandler = (e) => {
+        if (!dropdown.contains(e.target) && e.target !== anchorBtn) {
+            if (dropdown) dropdown.remove();
+            document.removeEventListener('mousedown', outsideHandler);
         }
-        redoStack = [];
+    };
+
+    anchorBtn.addEventListener('mouseleave', scheduleClose);
+    anchorBtn.addEventListener('mouseenter', cancelClose);
+    dropdown.addEventListener('mouseleave', scheduleClose);
+    dropdown.addEventListener('mouseenter', cancelClose);
+    // Also close when clicking outside
+    setTimeout(() => { document.addEventListener('mousedown', outsideHandler); }, 0);
+}
+    // (removed duplicate header)
+    function saveToUndoStack(e) {
+        const value = editor.value;
+        // If shift is held, always save whole text immediately
+        if (e && e.shiftKey) {
+            undoStack.push(value);
+            if (undoStack.length > UNDO_STACK_LIMIT) undoStack.shift();
+            redoStack = [];
+            lastUndoValue = value;
+            lastUndoSaveTime = Date.now();
+            return;
+        }
+        // Throttle saves
+        if (undoTimer) clearTimeout(undoTimer);
+        undoTimer = setTimeout(() => {
+            // Detect incomplete word/typo: if last char is not space or punctuation, or if last word is not in dictionary
+            let incomplete = false;
+            const lastWordMatch = value.match(/(\w+)$/);
+            if (lastWordMatch) {
+                const lastWord = lastWordMatch[1];
+                // Simple typo detection: word length > 2 and not in basic dictionary
+                const basicDict = ['the','and','for','with','this','that','from','have','will','can','are','was','but','not','all','any','one','two','three','four','five','six','seven','eight','nine','zero','markdown','editor','bold','italic','code','list','table','image','link','quote','task','footnote','heading','feature','example','function','block','write','file','open','save','undo','redo','preview','split','pane','view','help','update','changelog','about','menu','toolbar','button','status','line','word','character','text','content','background','color','font','size','align','left','center','right','checkbox','item','definition','hr','horizontal','rule','subscript','superscript','insert','select','dialog','popup','alert','find','replace','history','search','input','output','syntax','highlight','real','time','interface','operations','welcome','happy'];
+                if (lastWord.length > 2 && !basicDict.includes(lastWord.toLowerCase())) {
+                    incomplete = true;
+                }
+            }
+            // Save if incomplete word/typo or value changed
+            if (incomplete || value !== lastUndoValue) {
+                undoStack.push(value);
+                if (undoStack.length > UNDO_STACK_LIMIT) undoStack.shift();
+                redoStack = [];
+                lastUndoValue = value;
+                lastUndoSaveTime = Date.now();
+            }
+        }, undoThrottleMs);
     }
 
     function undo() {
@@ -1181,6 +1385,7 @@ Happy writing!"></textarea>
             editor.value = undoStack[undoStack.length - 1] || '';
             updatePreview();
             updateStatusBar();
+            lastUndoValue = editor.value;
         }
     }
 
@@ -1188,9 +1393,11 @@ Happy writing!"></textarea>
         if (redoStack.length > 0) {
             const redoValue = redoStack.pop();
             undoStack.push(redoValue);
+            if (undoStack.length > UNDO_STACK_LIMIT) undoStack.shift();
             editor.value = redoValue;
             updatePreview();
             updateStatusBar();
+            lastUndoValue = redoValue;
         }
     }
 
@@ -1485,6 +1692,13 @@ Happy writing!"></textarea>
 
     // Menu functions (placeholder implementations)
     function showAbout() {
+        // Render local changelogs into the popup using existing markdown parser
+        const el = document.getElementById('changelog-content');
+        try {
+            if (el) el.innerHTML = parseMarkdown(LOCAL_CHANGELOG_MD);
+        } catch (err) {
+            if (el) el.textContent = LOCAL_CHANGELOG_MD;
+        }
         document.getElementById('changelog-popup').style.display = 'block';
         document.getElementById('popup-overlay').style.display = 'block';
     }
@@ -1505,16 +1719,23 @@ Happy writing!"></textarea>
     // Hide help popup
     document.addEventListener('DOMContentLoaded', function() {
       var closeBtn = document.getElementById('help-popup-close');
-      if (closeBtn) closeBtn.onclick = function() {
-        document.getElementById('help-popup').style.display = 'none';
-        document.getElementById('popup-overlay').style.display = 'none';
-      };
+            if (closeBtn) closeBtn.onclick = function() {
+                document.getElementById('help-popup').style.display = 'none';
+                document.getElementById('popup-overlay').style.display = 'none';
+            };
+            var changelogClose = document.getElementById('changelog-popup-close');
+            if (changelogClose) changelogClose.onclick = function() {
+                document.getElementById('changelog-popup').style.display = 'none';
+                document.getElementById('popup-overlay').style.display = 'none';
+            };
       // Also close when clicking overlay
       var overlay = document.getElementById('popup-overlay');
-      if (overlay) overlay.addEventListener('click', function() {
-        document.getElementById('help-popup').style.display = 'none';
-        overlay.style.display = 'none';
-      });
+            if (overlay) overlay.addEventListener('click', function() {
+                // Close any open popups that use the overlay
+                var help = document.getElementById('help-popup'); if (help) help.style.display = 'none';
+                var changelog = document.getElementById('changelog-popup'); if (changelog) changelog.style.display = 'none';
+                overlay.style.display = 'none';
+            });
     });
 
     // Handle image info badge clicks
