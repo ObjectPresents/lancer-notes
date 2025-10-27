@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XSS Protection Test</title>
+</head>
+<body>
+    <h1>XSS Protection Test for Markdown Editor v1.3.1</h1>
+    
+    <h2>Test Cases:</h2>
+    <div id="test-results"></div>
+    
+    <script>
+        // Copy the security functions from the updated editor
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function isValidUrl(url) {
+            try {
+                const urlObj = new URL(url);
+                return ['http:', 'https:', 'mailto:'].includes(urlObj.protocol);
+            } catch {
+                return false;
+            }
+        }
+
+        function parseMarkdown(markdown) {
+            let html = markdown
+                .replace(/^### (.*$)/gm, (match, content) => `<h3>${escapeHtml(content)}</h3>`)
+                .replace(/^## (.*$)/gm, (match, content) => `<h2>${escapeHtml(content)}</h2>`)
+                .replace(/^# (.*$)/gm, (match, content) => `<h1>${escapeHtml(content)}</h1>`)
+                .replace(/\*\*(.*?)\*\*/g, (match, content) => `<strong>${escapeHtml(content)}</strong>`)
+                .replace(/\*(.*?)\*/g, (match, content) => `<em>${escapeHtml(content)}</em>`)
+                .replace(/~~(.*?)~~/g, (match, content) => `<del>${escapeHtml(content)}</del>`)
+                .replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => `<pre><code>${escapeHtml(code)}</code></pre>`)
+                .replace(/`([^`]+)`/g, (match, content) => `<code>${escapeHtml(content)}</code>`)
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+                    if (isValidUrl(url)) {
+                        return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`;
+                    }
+                    return escapeHtml(match);
+                })
+                .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, url) => {
+                    if (isValidUrl(url)) {
+                        return `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" />`;
+                    }
+                    return escapeHtml(match);
+                })
+                .replace(/^\s*\* (.+)$/gm, (match, content) => `<li>${escapeHtml(content)}</li>`)
+                .replace(/^\s*- (.+)$/gm, (match, content) => `<li>${escapeHtml(content)}</li>`)
+                .replace(/^\s*\d+\. (.+)$/gm, (match, content) => `<li>${escapeHtml(content)}</li>`)
+                .replace(/^> (.+)$/gm, (match, content) => `<blockquote>${escapeHtml(content)}</blockquote>`)
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>');
+
+            html = '<p>' + html + '</p>';
+            html = html.replace(/<\/p><p>(<li>.*?<\/li>)<\/p><p>/g, '<ul>$1</ul>');
+            html = html.replace(/<\/li><br><li>/g, '</li><li>');
+            html = html.replace(/<p><\/p>/g, '');
+            html = html.replace(/<p><br><\/p>/g, '');
+
+            return html;
+        }
+
+        // Test cases for XSS protection
+        const testCases = [
+            {
+                name: "Script injection in header",
+                input: "# <script>alert('XSS')</script>",
+                expected: "Should escape script tags"
+            },
+            {
+                name: "Script injection in bold text",
+                input: "**<script>alert('XSS')</script>**",
+                expected: "Should escape script tags"
+            },
+            {
+                name: "Script injection in code block",
+                input: "```\n<script>alert('XSS')</script>\n```",
+                expected: "Should escape script tags"
+            },
+            {
+                name: "Malicious link",
+                input: "[Click me](javascript:alert('XSS'))",
+                expected: "Should reject javascript: URLs"
+            },
+            {
+                name: "Valid link",
+                input: "[Google](https://google.com)",
+                expected: "Should allow valid HTTPS URLs"
+            },
+            {
+                name: "Malicious image",
+                input: "![Alt](javascript:alert('XSS'))",
+                expected: "Should reject javascript: URLs"
+            }
+        ];
+
+        const resultsDiv = document.getElementById('test-results');
+        
+        testCases.forEach(test => {
+            const result = parseMarkdown(test.input);
+            const testDiv = document.createElement('div');
+            testDiv.innerHTML = `
+                <h3>${test.name}</h3>
+                <p><strong>Input:</strong> <code>${escapeHtml(test.input)}</code></p>
+                <p><strong>Expected:</strong> ${test.expected}</p>
+                <p><strong>Output:</strong> <code>${escapeHtml(result)}</code></p>
+                <p><strong>Rendered:</strong> <div style="border: 1px solid #ccc; padding: 10px; margin: 5px 0;">${result}</div></p>
+                <hr>
+            `;
+            resultsDiv.appendChild(testDiv);
+        });
+    </script>
+</body>
+</html>
+
+
+

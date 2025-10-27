@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+ <style>
+   .outline { stroke: #000; stroke-width: 32; stroke-linejoin: round; }
+   .fill { fill: #fff; }
+   .accent { fill: #007acc; }
+   .pencil { fill: #ff9966; }
+   .pencil-tip { fill: #666; }
+ </style>
+ <g>
+   <!-- Notebook base -->
+   <path class="outline fill" d="M100 50 L380 50 Q400 50 400 70 L400 430 Q400 450 380 450 L100 450 Q80 450 80 430 L80 70 Q80 50 100 50 Z"/>
+   <!-- Spiral binding -->
+   <path class="outline accent" d="M90 80 C110 80 110 100 90 100 M90 140 C110 140 110 160 90 160 M90 200 C110 200 110 220 90 220 M90 260 C110 260 110 280 90 280 M90 320 C110 320 110 340 90 340 M90 380 C110 380 110 400 90 400"/>
+   <!-- Paper lines -->
+   <path class="accent" style="stroke-width:4" d="M140 150 L340 150 M140 200 L340 200 M140 250 L340 250 M140 300 L340 300 M140 350 L340 350"/>
+   <!-- Pencil -->
+   <path class="outline pencil" d="M280 120 L400 240 L360 280 L240 160 Z"/>
+   <path class="outline pencil-tip" d="M220 140 L260 180 L240 200 L200 160 Z"/>
+ </g>
+</svg>
