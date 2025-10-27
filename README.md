@@ -6,7 +6,15 @@ Project completed by 100% solo with moderate use of AI, templates and inspriatio
 Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (Bluesky) or lightingperson_2763@outlook.com.vn
 
 ## Changelogs:
-#### v2.1.2 (26/10/2025)
+#### v1.3.2 (27/10/2025):
+- Major Improvements for v1.3.2:
+  - Replaced regex-based parser with markdown-it for better CommonMark support
+  - Added syntax highlighting for code blocks using highlight.js integration
+  - Added support for local library vendoring (vendor-libs.ps1)
+  - Added proper support for backslash-escaped markdown characters
+  - Removed warning banner due to backlash
+  - Added in-browser Tests button for smoke testing
+#### v2.1.2 (26/10/2025):
 - Small fixes and polish for v2.1.2:
   - Fix dark-mode styling for the undo/redo history dropdown
   - Keep history dropdown visible when hovering between the toolbar button and the menu
