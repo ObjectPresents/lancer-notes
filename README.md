@@ -15,6 +15,15 @@ Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (
 - Added basic table functionality
 - Implemented automatic update checking system
 - All features from v2.1.4, v2.1.3, v2.1.2 ported to v2.2.
+  - Word wrap (beta) with toolbar button and keyboard shortcut
+  - Image auto-resize feature with configurable maximum width
+  - Heading rendering inside blockquotes
+  - Unified popup styling with blue headers
+  - Dark-mode scrollbars with color-scheme support
+  - Centered Find/Replace dialog
+  - Undo/Redo history dropdown on hover
+  - Improved undo/redo system with 250ms throttle for reduced lag
+  - Dark-mode styling for history dropdown
 #### v1.3.2 (27/10/2025):
 - Major Improvements for v1.3.2:
   - Replaced regex-based parser with markdown-it for better CommonMark support
