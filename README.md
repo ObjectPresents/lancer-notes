@@ -12,9 +12,9 @@ Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (
 - Implemented real-time synchronization between editor and preview
 - Enhanced markdown-to-HTML conversion for better editing experience
 - Improved bidirectional editing capabilities
-- Added basic table functionality
+- Added more basic table functionality
 - Implemented automatic update checking system
-- All features from v2.1.4, v2.1.3, v2.1.2 ported to v2.2.
+- All features from v2.1.4, v2.1.3, v2.1.2 ported to v2.2:
   - Word wrap (beta) with toolbar button and keyboard shortcut
   - Image auto-resize feature with configurable maximum width
   - Heading rendering inside blockquotes
