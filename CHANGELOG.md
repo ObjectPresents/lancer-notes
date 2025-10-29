@@ -1,3 +1,14 @@
+## v2.1.3 (Unreleased — beta)
+- Implemented heading rendering inside blockquotes so Markdown headings within ">" blocks render as proper HTML headings.
+- Added "image from link" auto-resize option (dialog checkbox). When enabled, the editor measures the linked image client-side and inserts responsive <img> markup with a configurable maximum width (default: 800px). Runtime cap can be adjusted via the toolbar control; preferences are persisted to localStorage (keys: `md-auto-resize-images`, `md-auto-resize-max`). Toolbar control id: `#btn-image-cap`.
+- Added a word-wrap toggle for the editor textarea (marked "beta"). The feature defaults to OFF, can be toggled via the toolbar button (`#btn-wordwrap`) or keyboard shortcut (Ctrl+Alt+W / Ctrl+Shift+W), and the preference is persisted to localStorage under `md-word-wrap`.
+- Misc: reordered blockquote/header parsing so headings inside blockquotes render correctly, fixed related JavaScript and CSS syntax issues encountered during development, and applied small UX polish to dialogs and controls.
+
+Developer testing notes:
+- Image auto-resize: open the Insert Image dialog, toggle "Auto-resize" on, paste a remote image URL and insert — the editor should insert responsive HTML <img> markup (with inline width/height and srcset when available); inspect preview to verify it respects the configured cap (default 800px).
+- Word-wrap: toggle the Wrap toolbar button (shows a small "beta" badge) or press the shortcut (Ctrl+Alt+W / Ctrl+Shift+W) to enable/disable soft wrapping in the editor textarea; verify the `wrap` class is applied to the editor and the preference survives reload.
+- If you need to reset these preferences, clear the corresponding localStorage keys (`md-auto-resize-images`, `md-auto-resize-max`, `md-word-wrap`).
+
 ## v2.1.2 (26/10/2025)
 - Small fixes and polish for v2.1.2:
   - Fix dark-mode styling for the undo/redo history dropdown

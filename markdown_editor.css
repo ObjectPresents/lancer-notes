@@ -20,11 +20,54 @@
     border-left: 4px solid #4fc3f7;
     background: #1a2633;
     color: #4fc3f7;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.dark-mode .preview-content blockquote h1,
+.dark-mode .preview-content blockquote h2,
+.dark-mode .preview-content blockquote h3,
+.dark-mode .preview-content blockquote h4,
+.dark-mode .preview-content blockquote h5,
+.dark-mode .preview-content blockquote h6 {
+    color: #4fc3f7;
+}
+
+.dark-mode .preview-content blockquote h1 {
+    border-bottom: 2px solid rgba(79, 195, 247, 0.15);
+}
+
+.dark-mode .preview-content blockquote h2 {
+    border-bottom: 1px solid rgba(79, 195, 247, 0.15);
 }
 
 .dark-mode .preview-content blockquote blockquote {
     border-left-color: #22d3ee;
     background: #162029;
+    margin: 15px 0;
+    padding: 10px 20px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.dark-mode .preview-content blockquote blockquote h1,
+.dark-mode .preview-content blockquote blockquote h2,
+.dark-mode .preview-content blockquote blockquote h3,
+.dark-mode .preview-content blockquote blockquote h4,
+.dark-mode .preview-content blockquote blockquote h5,
+.dark-mode .preview-content blockquote blockquote h6 {
+    color: #22d3ee;
+    border-bottom: 1px solid rgba(34, 211, 238, 0.15);
+    margin-top: 12px;
+    margin-bottom: 8px;
+}
+
+.preview-content blockquote *:first-child {
+    margin-top: 0;
+}
+
+.preview-content blockquote *:last-child {
+    margin-bottom: 0;
 }
 
 /* Fix: Dark mode for preview backgrounds */
@@ -100,11 +143,15 @@ body.dark-mode {
     background-color: #101214;
     border: 1px solid #444;
     color: #e0e0e0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 .dark-mode .preview-content code {
     background-color: #1a1d1f;
     color: #e0e0e0;
     border: 1px solid #333;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 .dark-mode .preview-content th, .dark-mode .preview-content td {
     border: 1px solid #444;
@@ -291,8 +338,33 @@ body {
     border-color: #005a9e;
 }
 
+/* Ensure word wrap button has consistent padding with other text buttons */
+#btn-wordwrap {
+    padding: 6px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
 .toolbar-btn .material-symbols-outlined {
     font-size: 18px;
+}
+
+/* Small beta badge used for experimental features in toolbar buttons */
+.toolbar-btn .beta-badge {
+    margin-left: 8px;
+    font-size: 10px;
+    background: #ffdf5d;
+    color: #222;
+    padding: 2px 6px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    font-weight: 700;
+    line-height: 1;
+}
+.dark-mode .toolbar-btn .beta-badge {
+    background: #ffd94b;
+    color: #111;
 }
 
 .toolbar-btn.icon-only {
@@ -342,12 +414,23 @@ body {
     background-color: white;
 }
 
+/* Word-wrap class for editor textarea. When applied, the editor will soft-wrap long lines. */
+.editor-textarea.wrap {
+    white-space: pre-wrap; /* keep existing newlines, wrap long lines */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
 .preview-content {
     flex: 1;
     padding: 20px;
     background-color: white;
     overflow-y: auto;
     border-left: 1px solid #ddd;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
 }
 
 .splitter {
@@ -388,6 +471,8 @@ body {
 .preview-content p {
     margin-bottom: 15px;
     line-height: 1.6;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 .preview-content ul, .preview-content ol {
@@ -397,6 +482,8 @@ body {
 
 .preview-content li {
     margin-bottom: 5px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 .preview-content code {
@@ -406,6 +493,8 @@ body {
     font-family: 'Courier New', monospace;
     -webkit-text-fill-color: initial;
     color: #222;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 .preview-content a {
@@ -421,9 +510,23 @@ body {
     height: auto;
 }
 
+/* Auto-resize class for inserted images from link (controlled by dialog) */
+:root { --md-auto-resize-max: 800px; }
+.preview-content img.md-auto-resize {
+    display: block;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+    object-fit: contain;
+    max-width: var(--md-auto-resize-max); /* configurable cap */
+    width: 100%; /* scale to container by default; inline styles (inserted) will override when present */
+}
+
 .dark-mode .preview-content code {
     color: #e0e0e0;
     -webkit-text-fill-color: initial;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 .dark-mode .preview-content a { color: #4fc3f7; }
@@ -436,10 +539,13 @@ body {
     padding: 15px;
     overflow-x: auto;
     margin-bottom: 15px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 .preview-content hr {
     border: none;
+
     border-top: 1px solid #ddd;
     margin: 16px 0;
 }
@@ -456,13 +562,57 @@ body {
     margin: 15px 0;
     color: #005a9e;
     font-family: inherit;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
+
+.preview-content blockquote h1,
+.preview-content blockquote h2,
+.preview-content blockquote h3,
+.preview-content blockquote h4,
+.preview-content blockquote h5,
+.preview-content blockquote h6 {
+    color: #005a9e;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    line-height: 1.3;
+}
+
+.preview-content blockquote h1 {
+    font-size: 1.8em;
+    border-bottom: 2px solid rgba(0, 90, 158, 0.2);
+    padding-bottom: 8px;
+}
+
+.preview-content blockquote h2 {
+    font-size: 1.4em;
+    border-bottom: 1px solid rgba(0, 90, 158, 0.2);
+    padding-bottom: 6px;
+}
+
+.preview-content blockquote h3 { font-size: 1.2em; }
+.preview-content blockquote h4 { font-size: 1.1em; }
+.preview-content blockquote h5 { font-size: 1em; }
+.preview-content blockquote h6 { font-size: 0.9em; }
 
 .preview-content blockquote blockquote {
     border-left-color: #7dd3fc;
     background: #f0f9ff;
     margin-top: 10px;
     margin-bottom: 10px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.preview-content blockquote blockquote h1,
+.preview-content blockquote blockquote h2,
+.preview-content blockquote blockquote h3,
+.preview-content blockquote blockquote h4,
+.preview-content blockquote blockquote h5,
+.preview-content blockquote blockquote h6 {
+    color: #22d3ee;
+    border-bottom-color: rgba(34, 211, 238, 0.2);
 }
 
 .preview-content table {
@@ -475,6 +625,8 @@ body {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 .preview-content th {
