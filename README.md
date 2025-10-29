@@ -6,6 +6,19 @@ Project completed by 100% solo with moderate use of AI, templates and inspriatio
 Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (Bluesky) or lightingperson_2763@outlook.com.vn
 
 ## Changelogs:
+#### v2.1.3 (26/10/2025)
+Features and improvements in v2.1.3:
+
+- Implemented heading rendering inside blockquotes so Markdown headings within ">" blocks render as proper HTML headings.
+- Added "image from link" auto-resize option (dialog checkbox). When enabled, the editor measures the linked image client-side and inserts responsive <img> markup with a configurable maximum width (default: 800px). Runtime cap can be adjusted via the toolbar control; preferences are persisted to localStorage (keys: md-auto-resize-images, md-auto-resize-max). Toolbar control id: #btn-image-cap.
+- Word wrap (beta) improvements and details:
+  - Works in both the editor and the preview. Long words and URLs wrap at safe boundaries to avoid horizontal scrolling.
+  - Code blocks use white-space: pre-wrap while preserving indentation; inline code wraps without breaking layout.
+  - Blockquotes, lists, and table cells are hardened to wrap content cleanly without overflow.
+  - Toggle via toolbar button (#btn-wordwrap) or keyboard shortcut (Ctrl+Alt+W / Ctrl+Shift+W).
+  - Preference persists in localStorage under md-word-wrap.
+  - Credits: feature made by LoserFan2020 with contributions from Phuc and Hung.
+- Misc: reordered blockquote/header parsing so headings inside blockquotes render correctly, fixed related JavaScript and CSS syntax issues encountered during development, and applied small UX polish to dialogs and controls.
 #### v2.2.0-beta-1 (28/10/2025)
 
 - Added support for editing directly in preview pane
