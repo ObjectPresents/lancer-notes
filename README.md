@@ -6,7 +6,7 @@ Project completed by 100% solo with moderate use of AI, templates and inspriatio
 Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (Bluesky) or lightingperson_2763@outlook.com.vn
 
 ## Changelogs:
-#### v2.1.3 (26/10/2025)
+#### v2.1.3 (29/10/2025)
 Features and improvements in v2.1.3:
 
 - Implemented heading rendering inside blockquotes so Markdown headings within ">" blocks render as proper HTML headings.
