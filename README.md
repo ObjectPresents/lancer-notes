@@ -6,6 +6,14 @@ Project completed by 100% solo with moderate use of AI, templates and inspriatio
 Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (Bluesky) or lightingperson_2763@outlook.com.vn
 
 ## Changelogs:
+#### v2.1.4 (03.11.2025)
+- UI consistency improvements across the app:
+  - Standardized toolbar buttons to a consistent icon + text pattern.
+  - Unified popup title bars with blue headers, close buttons, rounded corners, and consistent shadows.
+- Redesigned Find/Replace as a centered dialog with header, improved spacing, and dark-mode support.
+- Replaced image cap prompt with a proper Image Cap dialog (validation, persistence, Enter-to-confirm).
+- Dark-mode scrollbars across browsers (added color-scheme hints and custom scrollbar styling).
+- Bumped application version to v2.1.4.
 #### v2.1.3 (29/10/2025)
 Features and improvements in v2.1.3:
 
