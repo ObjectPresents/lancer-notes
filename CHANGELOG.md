@@ -1,4 +1,13 @@
-## v2.1.3 (Unreleased — beta)
+## v2.1.4 (03/11/2025)
+- UI consistency improvements across the app:
+  - Standardized toolbar buttons to a consistent icon + text pattern.
+  - Unified popup title bars with blue headers, close buttons, rounded corners, and consistent shadows.
+- Redesigned Find/Replace as a centered dialog with header, improved spacing, and dark-mode support.
+- Replaced image cap prompt with a proper Image Cap dialog (validation, persistence, Enter-to-confirm).
+- Dark-mode scrollbars across browsers (added color-scheme hints and custom scrollbar styling).
+- Bumped application version to v2.1.4.
+
+## v2.1.3 (29/10/2025)
 - Implemented heading rendering inside blockquotes so Markdown headings within ">" blocks render as proper HTML headings.
 - Added "image from link" auto-resize option (dialog checkbox). When enabled, the editor measures the linked image client-side and inserts responsive <img> markup with a configurable maximum width (default: 800px). Runtime cap can be adjusted via the toolbar control; preferences are persisted to localStorage (keys: `md-auto-resize-images`, `md-auto-resize-max`). Toolbar control id: `#btn-image-cap`.
 - Added a word-wrap toggle for the editor textarea (marked "beta"). The feature defaults to OFF, can be toggled via the toolbar button (`#btn-wordwrap`) or keyboard shortcut (Ctrl+Alt+W / Ctrl+Shift+W), and the preference is persisted to localStorage under `md-word-wrap`.

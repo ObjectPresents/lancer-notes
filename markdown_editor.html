@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
     <title>Markdown Editor</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="markdown_editor.css" />
@@ -30,37 +31,40 @@
       body.dark-mode #link-image-dialog {
         background: #181a1b !important;
         border-color: #444 !important;
-        color: #e0e0e0 !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
       }
       body.dark-mode #link-image-dialog input {
         background: #101214 !important;
         color: #e0e0e0 !important;
         border: 1px solid #444 !important;
       }
-      body.dark-mode #link-image-dialog button {
+      body.dark-mode #link-image-dialog label {
+        color: #e0e0e0 !important;
+      }
+      body.dark-mode #link-image-dialog button#dialog-cancel,
+      body.dark-mode #link-image-dialog button#dialog-ok {
         background: #23272a !important;
         color: #e0e0e0 !important;
         border: 1px solid #444 !important;
         transition: all 0.2s !important;
       }
-      body.dark-mode #link-image-dialog button:hover {
+      body.dark-mode #link-image-dialog button#dialog-cancel:hover,
+      body.dark-mode #link-image-dialog button#dialog-ok:hover {
         background: #2d3136 !important;
         border-color: #666 !important;
       }
       body.dark-mode #custom-alert {
         background: #181a1b !important;
         border-color: #444 !important;
-        color: #e0e0e0 !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
       }
-      body.dark-mode #custom-alert button {
+      body.dark-mode #custom-alert button#custom-alert-ok {
         background: #23272a !important;
         color: #e0e0e0 !important;
         border: 1px solid #444 !important;
         transition: all 0.2s !important;
       }
-      body.dark-mode #custom-alert button:hover {
+      body.dark-mode #custom-alert button#custom-alert-ok:hover {
         background: #2d3136 !important;
         border-color: #666 !important;
       }
@@ -186,10 +190,10 @@
             <button class="toolbar-btn" id="btn-check-updates" title="Check for Updates"><span class="material-symbols-outlined">system_update</span> Updates</button>
         </div>
         <div class="toolbar-group">
-            <button class="toolbar-btn" id="btn-image-cap" title="Set image auto-resize max width">Img cap</button>
+            <button class="toolbar-btn" id="btn-image-cap" title="Set image auto-resize max width"><span class="material-symbols-outlined">photo_size_select_large</span> Image Cap</button>
         </div>
         <div class="toolbar-group">
-            <button class="toolbar-btn" id="btn-wordwrap" title="Toggle word wrap (beta)"><span class="material-symbols-outlined">wrap_text</span>Wrap <span class="beta-badge">beta</span></button>
+            <button class="toolbar-btn" id="btn-wordwrap" title="Toggle word wrap (beta)"><span class="material-symbols-outlined">wrap_text</span> Wrap <span class="beta-badge">beta</span></button>
         </div>
     </div>
 
@@ -235,14 +239,18 @@ Happy writing!"></textarea>
 </div>
 
 <!-- Find/Replace Bar -->
-<div id="find-replace-bar" style="display:none;position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#fff;border:1px solid #ccc;padding:10px;z-index:1001;width:420px;box-shadow:0 2px 6px rgba(0,0,0,0.15);font-size:13px;">
-    <div style="display:flex;gap:8px;align-items:center;">
-        <input id="find-input" placeholder="Find" style="flex:1;padding:6px;" />
-        <input id="replace-input" placeholder="Replace" style="flex:1;padding:6px;" />
-        <button id="find-close" title="Close" style="padding:6px">✕</button>
+<div id="find-replace-bar" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:2px solid #007acc;z-index:1001;width:500px;box-shadow:0 8px 32px rgba(0,0,0,0.25);border-radius:10px;overflow:hidden;">
+    <div style="background:#007acc;color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-weight:bold;">Find and Replace</span>
+        <button id="find-close" title="Close" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">&times;</button>
     </div>
-    <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
-        <div style="display:flex;gap:10px;align-items:center;">
+    <div style="padding:16px;">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <input id="find-input" placeholder="Find" style="flex:1;padding:8px;font-size:13px;" />
+        <input id="replace-input" placeholder="Replace" style="flex:1;padding:8px;font-size:13px;" />
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
             <label style="font-size:12px;"><input type="checkbox" id="case-sensitive" /> Case sensitive</label>
             <label style="font-size:12px;"><input type="checkbox" id="use-regex" /> Regex</label>
             <div style="display:flex;align-items:center;gap:8px;">
@@ -256,19 +264,20 @@ Happy writing!"></textarea>
                 </div>
             </div>
         </div>
-        <div id="match-count" style="font-size:12px;">0 / 0</div>
+        <div id="match-count" style="font-size:12px;font-weight:600;">0 / 0</div>
     </div>
-    <div style="margin-top:8px;display:flex;gap:6px;justify-content:flex-end;">
-        <button id="btn-find-prev">Prev</button>
-        <button id="btn-find-next">Next</button>
-        <button id="btn-replace">Replace</button>
-        <button id="btn-replace-all">Replace All</button>
+    <div style="display:flex;gap:6px;justify-content:flex-end;margin-bottom:12px;">
+        <button id="btn-find-prev" style="padding:6px 12px;">Prev</button>
+        <button id="btn-find-next" style="padding:6px 12px;">Next</button>
+        <button id="btn-replace" style="padding:6px 12px;">Replace</button>
+        <button id="btn-replace-all" style="padding:6px 12px;">Replace All</button>
     </div>
-    <div style="margin-top:6px;display:flex;justify-content:space-between;align-items:center;">
-        <select id="search-history" style="font-size:12px;padding:4px;min-width:180px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+        <select id="search-history" style="font-size:12px;padding:6px;min-width:180px;">
             <option value="">Recent searches...</option>
         </select>
-        <div style="font-size:11px;color:#666;">Hints: Use Regex for patterns</div>
+        <div style="font-size:11px;color:#888;">Hints: Use Regex for patterns</div>
+    </div>
     </div>
 </div>
 
@@ -276,8 +285,12 @@ Happy writing!"></textarea>
 <div id="popup-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999;"></div>
 
 <!-- Link/Image Dialog -->
-<div id="link-image-dialog" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #ccc;padding:16px;z-index:1000;width:400px;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-    <h3 id="dialog-title" style="margin-top:0;margin-bottom:15px;font-size:16px;">Insert Link</h3>
+<div id="link-image-dialog" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:2px solid #007acc;z-index:1000;width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.25);border-radius:10px;overflow:hidden;">
+    <div style="background:#007acc;color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <span id="dialog-title" style="font-weight:bold;">Insert Link</span>
+        <button id="dialog-title-close" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">&times;</button>
+    </div>
+    <div style="padding:16px;">
     <div style="margin-bottom:10px;">
         <label for="dialog-url" style="display:block;margin-bottom:5px;font-size:13px;">URL</label>
         <input id="dialog-url" type="text" style="width:100%;padding:8px;font-size:14px;" />
@@ -293,12 +306,18 @@ Happy writing!"></textarea>
         <button id="dialog-cancel">Cancel</button>
         <button id="dialog-ok">OK</button>
     </div>
+    </div>
 </div>
 
 <!-- Custom Alert Dialog -->
-<div id="custom-alert" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #ccc;padding:20px;z-index:1000;width:450px;box-shadow:0 4px 12px rgba(0,0,0,0.15);text-align:center;">
-    <div id="custom-alert-message" style="margin-bottom:20px;font-size:14px;line-height:1.6;white-space:pre-wrap;"></div>
-    <button id="custom-alert-ok" style="padding:8px 20px;">OK</button>
+<div id="custom-alert" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:2px solid #007acc;z-index:1000;width:450px;box-shadow:0 8px 32px rgba(0,0,0,0.25);border-radius:10px;overflow:hidden;">
+    <div style="background:#007acc;color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-weight:bold;">Alert</span>
+    </div>
+    <div style="padding:20px;text-align:center;">
+        <div id="custom-alert-message" style="margin-bottom:20px;font-size:14px;line-height:1.6;white-space:pre-wrap;"></div>
+        <button id="custom-alert-ok" style="padding:8px 20px;">OK</button>
+    </div>
 </div>
 
 <!-- Markdown Guide Help Popup -->
@@ -321,17 +340,51 @@ Happy writing!"></textarea>
             </div>
     </div>
 
+<!-- Image Cap Dialog -->
+<div id="image-cap-dialog" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:2px solid #007acc;z-index:1000;width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.25);border-radius:10px;overflow:hidden;">
+    <div style="background:#007acc;color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-weight:bold;">Set Image Maximum Width</span>
+        <button id="image-cap-close" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">&times;</button>
+    </div>
+    <div style="padding:16px;">
+        <div style="margin-bottom:10px;">
+            <label for="image-cap-input" style="display:block;margin-bottom:5px;font-size:13px;">Maximum width for auto-resized images (pixels):</label>
+            <input id="image-cap-input" type="number" min="50" max="3000" step="50" style="width:100%;padding:8px;font-size:14px;" />
+        </div>
+        <div style="font-size:12px;color:#666;margin-bottom:15px;">Default: 800px. Range: 50-3000px.</div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;">
+            <button id="image-cap-cancel" style="padding:6px 12px;">Cancel</button>
+            <button id="image-cap-ok" style="padding:6px 12px;">OK</button>
+        </div>
+    </div>
+</div>
+
 <input type="file" id="file-input" class="hidden-file-input" accept=".md,.txt,.text" />
 
 <script>
     // Minimal dark-mode styles for Find/Replace bar injected dynamically so layout isn't changed
     (function(){
         const css = `
-        body.dark-mode #find-replace-bar { background: #222; border-color: #444; color: #ddd; }
-        body.dark-mode #find-replace-bar input { background: #2b2b2b; color:#eee; border:1px solid #444 }
-        body.dark-mode #find-replace-bar button { background:#333; color:#ddd; border:1px solid #444 }
-        body.dark-mode #find-replace-bar label { color:#ccc }
-        body.dark-mode #find-replace-bar #match-count { color:#bbb }
+        body.dark-mode #find-replace-bar { background: #181a1b; border-color: #444; }
+        body.dark-mode #find-replace-bar input { background: #101214; color:#e0e0e0; border:1px solid #444 }
+        body.dark-mode #find-replace-bar select { background: #101214; color:#e0e0e0; border:1px solid #444 }
+        body.dark-mode #find-replace-bar button#btn-find-prev,
+        body.dark-mode #find-replace-bar button#btn-find-next,
+        body.dark-mode #find-replace-bar button#btn-replace,
+        body.dark-mode #find-replace-bar button#btn-replace-all { background:#23272a; color:#e0e0e0; border:1px solid #444 }
+        body.dark-mode #find-replace-bar button#btn-find-prev:hover,
+        body.dark-mode #find-replace-bar button#btn-find-next:hover,
+        body.dark-mode #find-replace-bar button#btn-replace:hover,
+        body.dark-mode #find-replace-bar button#btn-replace-all:hover { background:#2d3136; border-color:#666; }
+        body.dark-mode #find-replace-bar label { color:#e0e0e0 }
+        body.dark-mode #find-replace-bar #match-count { color:#e0e0e0 }
+        body.dark-mode #image-cap-dialog { background: #181a1b; border-color: #444; }
+        body.dark-mode #image-cap-dialog input { background: #101214; color:#e0e0e0; border:1px solid #444 }
+        body.dark-mode #image-cap-dialog label { color:#e0e0e0; }
+        body.dark-mode #image-cap-dialog button#image-cap-cancel,
+        body.dark-mode #image-cap-dialog button#image-cap-ok { background:#23272a; color:#e0e0e0; border:1px solid #444 }
+        body.dark-mode #image-cap-dialog button#image-cap-cancel:hover,
+        body.dark-mode #image-cap-dialog button#image-cap-ok:hover { background:#2d3136; border-color:#666; }
         /* Highlight styles */
         .md-match { background: #fffb91; color: #111; padding:0 2px; border-radius:2px; }
         .md-match-current { background: #ffcf66; color:#111; padding:0 2px; border-radius:2px; }
@@ -343,13 +396,18 @@ Happy writing!"></textarea>
     .flags-menu label { cursor:pointer }
     body.dark-mode .flags-menu { background:#2b2b2b;border-color:#444;color:#ddd }
     body.dark-mode .flags-toggle { background:#2b2b2b;border-color:#444;color:#ddd }
-    body.dark-mode #link-image-dialog { background: #222; border-color: #444; color: #ddd; }
-    body.dark-mode #link-image-dialog input { background: #2b2b2b; color:#eee; border:1px solid #444 }
-    body.dark-mode #link-image-dialog button { background:#333; color:#ddd; border:1px solid #444 }
+    body.dark-mode #link-image-dialog { background: #181a1b; border-color: #444; }
+    body.dark-mode #link-image-dialog input { background: #101214; color:#e0e0e0; border:1px solid #444 }
+    body.dark-mode #link-image-dialog label { color:#e0e0e0; }
+    body.dark-mode #link-image-dialog button#dialog-cancel,
+    body.dark-mode #link-image-dialog button#dialog-ok { background:#23272a; color:#e0e0e0; border:1px solid #444 }
+    body.dark-mode #link-image-dialog button#dialog-cancel:hover,
+    body.dark-mode #link-image-dialog button#dialog-ok:hover { background:#2d3136; border-color:#666; }
     #popup-overlay { transition: background-color 0.3s; }
-    body.dark-mode #popup-overlay { background: rgba(255, 255, 255, 0.1); }
-    body.dark-mode #custom-alert { background: #222; border-color: #444; color: #ddd; }
-    body.dark-mode #custom-alert button { background:#333; color:#ddd; border:1px solid #444 }
+    body.dark-mode #popup-overlay { background: rgba(0, 0, 0, 0.5); }
+    body.dark-mode #custom-alert { background: #181a1b; border-color: #444; }
+    body.dark-mode #custom-alert button#custom-alert-ok { background:#23272a; color:#e0e0e0; border:1px solid #444 }
+    body.dark-mode #custom-alert button#custom-alert-ok:hover { background:#2d3136; border-color:#666; }
     body.dark-mode #help-popup, body.dark-mode #changelog-popup { background: #222; border-color: #444; }
     body.dark-mode #help-popup iframe, body.dark-mode #changelog-popup iframe { background: #222; color: #e0e0e0; }
         `;
@@ -372,10 +430,19 @@ Happy writing!"></textarea>
     let currentViewMode = 'split';
     
     // Version information
-    const CURRENT_VERSION = '2.1.3';
+    const CURRENT_VERSION = '2.1.4';
     const GITHUB_RELEASES_API = 'https://api.github.com/repos/ObjectPresents/lancer-notes/releases/latest';
         // Local changelog markdown (sourced from README.md 'Changelogs' section)
         const LOCAL_CHANGELOG_MD = `
+
+## v2.1.4 (03.11.2025)
+- UI consistency improvements across the app:
+  - Standardized toolbar buttons to a consistent icon + text pattern.
+  - Unified popup title bars with blue headers, close buttons, rounded corners, and consistent shadows.
+- Redesigned Find/Replace as a centered dialog with header, improved spacing, and dark-mode support.
+- Replaced image cap prompt with a proper Image Cap dialog (validation, persistence, Enter-to-confirm).
+- Dark-mode scrollbars across browsers (added color-scheme hints and custom scrollbar styling).
+- Bumped application version to v2.1.4.
 
 ## v2.1.3 (29.10.2025)
 - Features and improvements in v2.1.3:
@@ -493,10 +560,26 @@ No major features; maintenance and polish:
             }
         } catch (e) { }
         // Set up event listeners
+        let easterEggShown = false;
         editor.addEventListener('input', function(e) {
             updatePreview();
             updateStatusBar();
             saveToUndoStack(e);
+            
+            // Easter egg: detect "sans" phrases for v2.2 teaser
+            if (!easterEggShown) {
+                const text = editor.value.toLowerCase();
+                const sansPatterns = ['any sans', 'sans undertale', 'megalovania', 'comic sans'];
+                for (const pattern of sansPatterns) {
+                    if (text.includes(pattern)) {
+                        easterEggShown = true;
+                        setTimeout(() => {
+                            showEasterEggPopup();
+                        }, 500);
+                        break;
+                    }
+                }
+            }
         });
 
         editor.addEventListener('keydown', function(e) {
@@ -567,25 +650,7 @@ No major features; maintenance and polish:
         // Image cap button: allow user to set max auto-resize width at runtime
         const imgCapBtn = document.getElementById('btn-image-cap');
         if (imgCapBtn) {
-            imgCapBtn.addEventListener('click', function() {
-                try {
-                    const computed = getComputedStyle(document.documentElement).getPropertyValue('--md-auto-resize-max') || '800px';
-                    const current = parseInt(computed.replace(/[^0-9]/g, ''), 10) || 800;
-                    const inp = prompt('Set maximum auto-resize image width in pixels:', current);
-                    if (inp !== null) {
-                        const v = parseInt(inp, 10);
-                        if (!isNaN(v) && v >= 50) {
-                            localStorage.setItem('md-auto-resize-max', String(v));
-                            document.documentElement.style.setProperty('--md-auto-resize-max', v + 'px');
-                            updateStatus('Image cap set to ' + v + 'px');
-                        } else {
-                            customAlert('Please enter a valid number (>= 50).');
-                        }
-                    }
-                } catch (err) {
-                    customAlert('Unable to change image cap in this environment.');
-                }
-            });
+            imgCapBtn.addEventListener('click', showImageCapDialog);
         }
 
     // Find/Replace button
@@ -1552,6 +1617,7 @@ function showHistoryDropdown(type, anchorBtn) {
         const dialog = document.getElementById('link-image-dialog');
         const overlay = document.getElementById('popup-overlay');
         const title = document.getElementById('dialog-title');
+        const titleCloseBtn = document.getElementById('dialog-title-close');
         const textLabel = document.getElementById('dialog-text-label');
         const urlInput = document.getElementById('dialog-url');
         const textInput = document.getElementById('dialog-text');
@@ -1655,11 +1721,13 @@ function showHistoryDropdown(type, anchorBtn) {
             dialog.style.display = 'none';
             okBtn.removeEventListener('click', handleOk);
             cancelBtn.removeEventListener('click', handleCancel);
+            titleCloseBtn.removeEventListener('click', handleCancel);
             editor.focus();
         };
 
         okBtn.addEventListener('click', handleOk);
         cancelBtn.addEventListener('click', handleCancel);
+        titleCloseBtn.addEventListener('click', handleCancel);
     }
 
     function insertTable() {
@@ -1670,6 +1738,72 @@ function showHistoryDropdown(type, anchorBtn) {
         editor.focus();
         updatePreview();
         updateStatusBar();
+    }
+
+    // Show image cap dialog
+    function showImageCapDialog() {
+        const dialog = document.getElementById('image-cap-dialog');
+        const overlay = document.getElementById('popup-overlay');
+        const input = document.getElementById('image-cap-input');
+        const okBtn = document.getElementById('image-cap-ok');
+        const cancelBtn = document.getElementById('image-cap-cancel');
+        const closeBtn = document.getElementById('image-cap-close');
+
+        // Get current value
+        try {
+            const computed = getComputedStyle(document.documentElement).getPropertyValue('--md-auto-resize-max') || '800px';
+            const current = parseInt(computed.replace(/[^0-9]/g, ''), 10) || 800;
+            input.value = current;
+        } catch (err) {
+            input.value = 800;
+        }
+
+        overlay.style.display = 'block';
+        dialog.style.display = 'block';
+        input.focus();
+        input.select();
+
+        const handleOk = () => {
+            const value = parseInt(input.value, 10);
+            if (!isNaN(value) && value >= 50 && value <= 3000) {
+                try {
+                    localStorage.setItem('md-auto-resize-max', String(value));
+                    document.documentElement.style.setProperty('--md-auto-resize-max', value + 'px');
+                    updateStatus('Image cap set to ' + value + 'px');
+                } catch (err) {
+                    customAlert('Unable to save image cap setting.');
+                }
+                closeDialog();
+            } else {
+                customAlert('Please enter a valid number between 50 and 3000.');
+            }
+        };
+
+        const handleCancel = () => {
+            closeDialog();
+        };
+
+        const closeDialog = () => {
+            overlay.style.display = 'none';
+            dialog.style.display = 'none';
+            okBtn.removeEventListener('click', handleOk);
+            cancelBtn.removeEventListener('click', handleCancel);
+            closeBtn.removeEventListener('click', handleCancel);
+            editor.focus();
+        };
+
+        okBtn.addEventListener('click', handleOk);
+        cancelBtn.addEventListener('click', handleCancel);
+        closeBtn.addEventListener('click', handleCancel);
+
+        // Allow Enter to confirm
+        input.addEventListener('keydown', function handleEnter(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleOk();
+                input.removeEventListener('keydown', handleEnter);
+            }
+        });
     }
 
     // Insert a footnote reference and scaffold definition at end
@@ -1880,12 +2014,111 @@ function showHistoryDropdown(type, anchorBtn) {
         okBtn.addEventListener('click', closeAlert);
     }
 
+    // Styled easter egg popup for v2.2 teaser
+    function showEasterEggPopup() {
+        const overlay = document.getElementById('popup-overlay');
+        
+        // Create modern styled popup
+        const easterEgg = document.createElement('div');
+        easterEgg.id = 'easter-egg-popup';
+        easterEgg.style.cssText = `
+            display:block;
+            position:fixed;
+            top:50%;
+            left:50%;
+            transform:translate(-50%,-50%);
+            background:#1a1a1a;
+            border:1px solid #333;
+            z-index:1000;
+            width:480px;
+            max-width:90vw;
+            box-shadow:0 24px 48px rgba(0,0,0,0.4);
+            border-radius:12px;
+            overflow:hidden;
+            animation: easterEggFadeIn 0.3s ease-out;
+        `;
+        
+        easterEgg.innerHTML = `
+            <div style="background:#007acc;padding:16px 24px;border-bottom:1px solid rgba(255,255,255,0.1);">
+                <div style="color:#fff;font-size:14px;font-weight:600;letter-spacing:0.5px;opacity:0.8;">PREVIEW</div>
+                <div style="color:#fff;font-size:20px;font-weight:600;margin-top:4px;">Version 2.2</div>
+            </div>
+            <div style="padding:32px 24px;color:#e0e0e0;">
+                <div style="margin-bottom:24px;">
+                    <div style="font-size:13px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:12px;font-weight:500;">Coming Soon</div>
+                    <div style="font-size:15px;line-height:1.6;color:#b0b0b0;">
+                        The next generation of Markdown Editor with powerful new capabilities.
+                    </div>
+                </div>
+                <div style="background:#222;border-radius:8px;padding:20px;border:1px solid #333;">
+                    <div style="font-size:14px;line-height:2.2;color:#e0e0e0;">
+                        <div style="display:flex;align-items:center;margin-bottom:4px;">
+                            <span style="color:#007acc;margin-right:12px;font-weight:600;">→</span>
+                            <span><strong>Editable Preview</strong> — Edit directly in preview pane</span>
+                        </div>
+                        <div style="display:flex;align-items:center;margin-bottom:4px;">
+                            <span style="color:#007acc;margin-right:12px;font-weight:600;">→</span>
+                            <span><strong>Live Sync</strong> — Real-time markdown sync</span>
+                        </div>
+                        <div style="display:flex;align-items:center;margin-bottom:4px;">
+                            <span style="color:#007acc;margin-right:12px;font-weight:600;">→</span>
+                            <span><strong>Rich Formatting</strong> — Advanced controls</span>
+                        </div>
+                        <div style="display:flex;align-items:center;">
+                            <span style="color:#007acc;margin-right:12px;font-weight:600;">→</span>
+                            <span><strong>Performance</strong> — Faster rendering</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:24px;text-align:center;">
+                    <button id="easter-egg-ok" style="padding:10px 24px;font-size:14px;font-weight:500;background:#007acc;color:#fff;border:none;border-radius:6px;cursor:pointer;transition:all 0.2s;">
+                        Got it
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Add animation keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes easterEggFadeIn {
+                0% { transform: translate(-50%,-50%) translateY(10px); opacity: 0; }
+                100% { transform: translate(-50%,-50%) translateY(0); opacity: 1; }
+            }
+            #easter-egg-ok:hover {
+                background: #0096ff;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        document.body.appendChild(easterEgg);
+        overlay.style.display = 'block';
+        
+        const closeEasterEgg = () => {
+            easterEgg.remove();
+            overlay.style.display = 'none';
+            style.remove();
+        };
+        
+        document.getElementById('easter-egg-ok').addEventListener('click', closeEasterEgg);
+    }
+
     // Menu functions (placeholder implementations)
     function showAbout() {
         // Render local changelogs into the popup using existing markdown parser
         const el = document.getElementById('changelog-content');
         try {
-            if (el) el.innerHTML = parseMarkdown(LOCAL_CHANGELOG_MD);
+            if (el) {
+                // Wrap parsed markdown in a `.changelog` container so CSS can target it specifically
+                const parsed = parseMarkdown(LOCAL_CHANGELOG_MD || '');
+                el.innerHTML = `<div class="changelog">${parsed}</div>`;
+
+                // Make links open in a new tab and add noopener for safety
+                Array.from(el.querySelectorAll('a')).forEach(a => {
+                    a.setAttribute('target', '_blank');
+                    a.setAttribute('rel', 'noopener noreferrer');
+                });
+            }
         } catch (err) {
             if (el) el.textContent = LOCAL_CHANGELOG_MD;
         }
