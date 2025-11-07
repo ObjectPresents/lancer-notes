@@ -1,3 +1,13 @@
+## v2.1.5 (07/11/2025)
+- Feature updates in v2.1.5:
+  - Added a table alignment dropdown consolidating left/center/right controls.
+  - Added a wrap-around option to Find/Replace navigation with status messaging.
+  - Refined toolbar dropdown styling with matching dark-mode treatment.
+- Fixes:
+  - Improved dark-mode preview readability for text and highlighted matches.
+- Maintenance:
+  - Bumped application version to v2.1.5.
+
 ## v2.1.4 (03/11/2025)
 - UI consistency improvements across the app:
   - Standardized toolbar buttons to a consistent icon + text pattern.

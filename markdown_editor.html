@@ -167,9 +167,22 @@
             <button class="toolbar-btn" id="btn-link" title="Insert Link"><span class="material-symbols-outlined">link</span> Link</button>
             <button class="toolbar-btn" id="btn-image" title="Insert Image"><span class="material-symbols-outlined">image</span> Image</button>
             <button class="toolbar-btn" id="btn-table" title="Insert Table"><span class="material-symbols-outlined">table_chart</span> Table</button>
-            <button class="toolbar-btn" id="btn-align-left" title="Left-align columns"><span class="material-symbols-outlined">format_align_left</span> Align</button>
-            <button class="toolbar-btn" id="btn-align-center" title="Center columns"><span class="material-symbols-outlined">format_align_center</span> Align</button>
-            <button class="toolbar-btn" id="btn-align-right" title="Right-align columns"><span class="material-symbols-outlined">format_align_right</span> Align</button>
+            <div class="toolbar-dropdown">
+                <button class="toolbar-btn" id="table-align-toggle" title="Align table columns" aria-haspopup="true" aria-expanded="false">
+                    <span class="material-symbols-outlined">format_align_left</span> Align ▾
+                </button>
+                <div class="toolbar-dropdown-menu" id="table-align-menu" role="menu" aria-hidden="true">
+                    <button class="toolbar-dropdown-item" data-align="left" role="menuitem">
+                        <span class="material-symbols-outlined">format_align_left</span> Left
+                    </button>
+                    <button class="toolbar-dropdown-item" data-align="center" role="menuitem">
+                        <span class="material-symbols-outlined">format_align_center</span> Center
+                    </button>
+                    <button class="toolbar-dropdown-item" data-align="right" role="menuitem">
+                        <span class="material-symbols-outlined">format_align_right</span> Right
+                    </button>
+                </div>
+            </div>
             <button class="toolbar-btn" id="btn-deflist" title="Definition List"><span class="material-symbols-outlined">menu_book</span> Def List</button>
         </div>
 <!-- Removed duplicate dark mode button -->
@@ -253,6 +266,7 @@ Happy writing!"></textarea>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
             <label style="font-size:12px;"><input type="checkbox" id="case-sensitive" /> Case sensitive</label>
             <label style="font-size:12px;"><input type="checkbox" id="use-regex" /> Regex</label>
+            <label style="font-size:12px;"><input type="checkbox" id="wrap-around" checked /> Wrap around</label>
             <div style="display:flex;align-items:center;gap:8px;">
                 <span style="font-size:12px;">Flags:</span>
                 <div class="flags-dropdown" style="position:relative;">
@@ -430,10 +444,20 @@ Happy writing!"></textarea>
     let currentViewMode = 'split';
     
     // Version information
-    const CURRENT_VERSION = '2.1.4';
+    const CURRENT_VERSION = '2.1.5';
     const GITHUB_RELEASES_API = 'https://api.github.com/repos/ObjectPresents/lancer-notes/releases/latest';
         // Local changelog markdown (sourced from README.md 'Changelogs' section)
         const LOCAL_CHANGELOG_MD = `
+
+## v2.1.5 (07.11.2025)
+- Feature updates in v2.1.5:
+  - Added table alignment dropdown consolidating column alignment controls.
+  - Introduced wrap-around toggle for Find/Replace navigation.
+  - Updated toolbar dropdown styling with dark-mode support.
+- Fixes:
+  - Improved dark-mode preview readability for text and highlighted matches.
+- Maintenance:
+  - Bumped application version to v2.1.5.
 
 ## v2.1.4 (03.11.2025)
 - UI consistency improvements across the app:
@@ -636,9 +660,85 @@ No major features; maintenance and polish:
     const wordwrapBtn = document.getElementById('btn-wordwrap');
     if (wordwrapBtn) { wordwrapBtn.addEventListener('click', function() { toggleWordWrap(); }); }
         document.getElementById('btn-table').addEventListener('click', insertTable);
-        document.getElementById('btn-align-left').addEventListener('click', function() { setTableAlignment('left'); });
-        document.getElementById('btn-align-center').addEventListener('click', function() { setTableAlignment('center'); });
-        document.getElementById('btn-align-right').addEventListener('click', function() { setTableAlignment('right'); });
+    const tableAlignToggle = document.getElementById('table-align-toggle');
+    const tableAlignMenu = document.getElementById('table-align-menu');
+    if (tableAlignToggle && tableAlignMenu) {
+        const dropdownWrapper = tableAlignToggle.closest('.toolbar-dropdown');
+        const iconSpan = tableAlignToggle.querySelector('.material-symbols-outlined');
+        const alignIconMap = {
+            left: 'format_align_left',
+            center: 'format_align_center',
+            right: 'format_align_right'
+        };
+
+        const closeMenu = () => {
+            if (dropdownWrapper) dropdownWrapper.classList.remove('open');
+            tableAlignMenu.setAttribute('aria-hidden', 'true');
+            tableAlignToggle.setAttribute('aria-expanded', 'false');
+        };
+
+        const openMenu = () => {
+            if (dropdownWrapper) dropdownWrapper.classList.add('open');
+            tableAlignMenu.setAttribute('aria-hidden', 'false');
+            tableAlignToggle.setAttribute('aria-expanded', 'true');
+        };
+
+        tableAlignToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const expanded = tableAlignToggle.getAttribute('aria-expanded') === 'true';
+            if (expanded) {
+                closeMenu();
+            } else {
+                openMenu();
+                const firstItem = tableAlignMenu.querySelector('.toolbar-dropdown-item');
+                if (firstItem) firstItem.focus();
+            }
+        });
+
+        tableAlignMenu.querySelectorAll('.toolbar-dropdown-item').forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const mode = item.getAttribute('data-align');
+                if (mode) {
+                    setTableAlignment(mode);
+                    if (iconSpan && alignIconMap[mode]) {
+                        iconSpan.textContent = alignIconMap[mode];
+                    }
+                }
+                closeMenu();
+                tableAlignToggle.focus();
+            });
+
+            item.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeMenu();
+                    tableAlignToggle.focus();
+                }
+            });
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!tableAlignMenu.contains(e.target) && !tableAlignToggle.contains(e.target)) {
+                closeMenu();
+            }
+        });
+
+        tableAlignToggle.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMenu();
+            } else if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (tableAlignToggle.getAttribute('aria-expanded') !== 'true') {
+                    openMenu();
+                }
+                const firstItem = tableAlignMenu.querySelector('.toolbar-dropdown-item');
+                if (firstItem) firstItem.focus();
+            }
+        });
+    }
         document.getElementById('btn-deflist').addEventListener('click', insertDefinitionList);
         document.getElementById('split-btn').addEventListener('click', function() { setViewMode('split'); });
         document.getElementById('editor-btn').addEventListener('click', function() { setViewMode('editor'); });
@@ -790,6 +890,11 @@ No major features; maintenance and polish:
         if (el) el.textContent = `${current} / ${total}`;
     }
 
+    function isWrapAroundEnabled() {
+        const cb = document.getElementById('wrap-around');
+        return !cb || cb.checked;
+    }
+
     function findNext() {
         const q = document.getElementById('find-input').value;
         if (q !== findState.lastQuery) {
@@ -797,7 +902,20 @@ No major features; maintenance and polish:
             updateMatches(q);
         }
         if (findState.matches.length === 0) return;
-        findState.currentIndex = (findState.currentIndex + 1) % findState.matches.length;
+        if (findState.currentIndex < 0) {
+            findState.currentIndex = 0;
+        } else if (findState.currentIndex < findState.matches.length - 1) {
+            findState.currentIndex += 1;
+        } else {
+            if (isWrapAroundEnabled()) {
+                findState.currentIndex = 0;
+            } else {
+                updateStatus('Reached last match');
+                highlightMatch(findState.currentIndex);
+                highlightMatches();
+                return;
+            }
+        }
         highlightMatch(findState.currentIndex);
         highlightMatches();
     }
@@ -809,7 +927,20 @@ No major features; maintenance and polish:
             updateMatches(q);
         }
         if (findState.matches.length === 0) return;
-        findState.currentIndex = (findState.currentIndex - 1 + findState.matches.length) % findState.matches.length;
+        if (findState.currentIndex < 0) {
+            findState.currentIndex = findState.matches.length - 1;
+        } else if (findState.currentIndex > 0) {
+            findState.currentIndex -= 1;
+        } else {
+            if (isWrapAroundEnabled()) {
+                findState.currentIndex = findState.matches.length - 1;
+            } else {
+                updateStatus('Reached first match');
+                highlightMatch(findState.currentIndex);
+                highlightMatches();
+                return;
+            }
+        }
         highlightMatch(findState.currentIndex);
         highlightMatches();
     }
