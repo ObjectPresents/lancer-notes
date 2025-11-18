@@ -6,7 +6,7 @@ Project completed by 100% solo with moderate use of AI, templates and inspriatio
 Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (Bluesky) or lightingperson_2763@outlook.com.vn
 
 ## Changelogs:
-#### v2.2.0 (11/11/2025)
+#### v2.2.0 (18/11/2025)
 #### v2.1.5 (07/11/2025)
 - Feature updates in v2.1.5:
     - Added table alignment dropdown consolidating column alignment controls.
