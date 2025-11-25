@@ -13,6 +13,8 @@ Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (
 	- Expanded shared popup framework (headers, buttons, dark mode) across dialogs and settings
 	- Settings dialog now reuses the shared popup buttons and neutral icon palette for visual unity
 	- Higher-contrast helper text in light mode for better accessibility
+   	- Added Extended Markdown features and aligning image (see more in FEATURES_AND_COMPATIBILITY.md)
+   	- And many more features, 80 features on it.
 #### v2.1.5 (07/11/2025)
 - Feature updates in v2.1.5:
     - Added ta-ble alignment dropdown consolidating column alignment controls.
