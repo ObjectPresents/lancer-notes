@@ -2,6 +2,702 @@
     z-index: 140000 !important;
 }
 
+.theme-dialog-body {
+    padding: 28px 32px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    background: rgba(248, 250, 252, 0.96);
+    font-family: 'Inter', system-ui, sans-serif;
+    color: #0f172a;
+}
+
+.theme-dialog-grid {
+    display: flex;
+    gap: 32px;
+    align-items: stretch;
+}
+
+.theme-options-column {
+    flex: 0 0 270px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.theme-preview-column {
+    flex: 1 1 auto;
+    display: flex;
+}
+
+.theme-dialog-heading {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.settings-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.settings-toggle input[type="checkbox"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.settings-toggle .toggle-track {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 44px;
+    height: 24px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.35);
+    box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.22);
+    position: relative;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.settings-toggle .toggle-track .toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.16);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.settings-toggle:hover .toggle-track {
+    box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.2);
+}
+
+.settings-toggle input[type="checkbox"]:focus-visible + .toggle-track {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.settings-toggle input[type="checkbox"]:checked + .toggle-track {
+    background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.settings-toggle input[type="checkbox"]:checked + .toggle-track .toggle-thumb {
+    transform: translateX(20px);
+    box-shadow: 0 6px 12px rgba(37, 99, 235, 0.25);
+}
+
+.settings-toggle input[type="checkbox"][disabled] + .toggle-track {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.settings-toggle input[type="checkbox"][disabled] + .toggle-track .toggle-thumb {
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 6px rgba(148, 163, 184, 0.3);
+}
+
+body.dark-mode .settings-toggle .toggle-track {
+    background: rgba(71, 85, 105, 0.5);
+    box-shadow: inset 0 0 0 1px rgba(203, 213, 225, 0.35);
+}
+
+body.dark-mode .settings-toggle input[type="checkbox"]:checked + .toggle-track {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.85) 0%, rgba(14, 165, 233, 0.8) 100%);
+    box-shadow: inset 0 0 0 1px rgba(148, 197, 255, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+body.dark-mode .settings-toggle .toggle-track .toggle-thumb {
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(2, 6, 23, 0.55);
+}
+
+body.dark-mode .settings-toggle input[type="checkbox"]:checked + .toggle-track .toggle-thumb {
+    background: #ffffff;
+    box-shadow: 0 6px 12px rgba(14, 165, 233, 0.28);
+}
+
+.theme-option-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 18px;
+}
+
+.theme-swatch {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    background: rgba(255, 255, 255, 0.88);
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    user-select: none;
+}
+
+.theme-swatch input {
+    display: none;
+}
+
+.theme-swatch:hover {
+    border-color: rgba(37, 99, 235, 0.45);
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+}
+
+.theme-squircle {
+    width: 74px;
+    height: 74px;
+    border-radius: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.theme-squircle::before,
+.theme-squircle::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.65;
+}
+
+.theme-squircle-auto::before {
+    background: linear-gradient(140deg, #f8fafc 0%, #dde3f7 45%, #1f2937 46%, #0f172a 100%);
+}
+
+.theme-squircle-auto::after {
+    background: radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.55), transparent 58%),
+                radial-gradient(circle at 70% 72%, rgba(255, 255, 255, 0.35), transparent 60%);
+    mix-blend-mode: screen;
+}
+
+.theme-squircle-light::before {
+    background: linear-gradient(140deg, #ffffff 0%, #f8fafc 55%, #e2e8f0 100%);
+}
+
+.theme-squircle-light::after {
+    background: radial-gradient(circle at 28% 26%, rgba(255, 255, 255, 0.9), transparent 60%),
+                radial-gradient(circle at 70% 80%, rgba(226, 232, 240, 0.8), transparent 70%);
+    mix-blend-mode: screen;
+}
+
+.theme-squircle-dark::before {
+    background: linear-gradient(140deg, #1f2933 0%, #101926 45%, #050a12 100%);
+}
+
+.theme-squircle-dark::after {
+    background: radial-gradient(circle at 28% 26%, rgba(59, 130, 246, 0.35), transparent 60%),
+                radial-gradient(circle at 70% 80%, rgba(14, 165, 233, 0.25), transparent 70%);
+    mix-blend-mode: screen;
+}
+
+.theme-squircle-check {
+    position: relative;
+    z-index: 2;
+    font-size: 28px;
+    color: #fff;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.theme-swatch input:checked + .theme-squircle {
+    border-color: rgba(37, 99, 235, 0.55);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18), 0 12px 22px rgba(15, 23, 42, 0.16);
+    transform: translateY(-2px);
+}
+
+.theme-swatch input:checked + .theme-squircle .theme-squircle-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.theme-swatch input:focus-visible + .theme-squircle {
+    outline: 2px solid rgba(37, 99, 235, 0.6);
+    outline-offset: 3px;
+}
+
+.theme-swatch-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #0f172a;
+}
+
+.theme-swatch-desc {
+    font-size: 12px;
+    color: #475569;
+}
+
+.theme-compact-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(248, 250, 252, 0.8);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.theme-compact-checkbox:hover {
+    border-color: rgba(37, 99, 235, 0.4);
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+}
+
+.theme-compact-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    flex-shrink: 0;
+    accent-color: #2563eb;
+}
+
+.theme-compact-checkbox input[type="checkbox"]:focus-visible {
+    outline: 2px solid rgba(37, 99, 235, 0.45);
+    outline-offset: 2px;
+}
+
+.theme-compact-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.theme-compact-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.theme-compact-desc {
+    font-size: 12px;
+    color: #475569;
+}
+
+
+.theme-preview-area {
+    flex: 1;
+    border-radius: 20px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.theme-preview-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.theme-preview-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.theme-preview-subtitle {
+    font-size: 13px;
+    color: #475569;
+    margin-top: 4px;
+}
+
+.theme-preview-hint {
+    font-size: 12px;
+    color: #475569;
+    text-align: right;
+}
+
+.theme-preview-shell {
+    border-radius: 18px;
+    border: 1px solid rgba(148, 163, 184, 0.32);
+    background: linear-gradient(160deg, rgba(249, 250, 255, 0.95) 0%, rgba(228, 234, 247, 0.96) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    overflow: hidden;
+    transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.theme-preview-shell.theme-preview-dark {
+    background: linear-gradient(160deg, rgba(30, 41, 59, 0.94) 0%, rgba(17, 24, 39, 0.96) 100%);
+    border-color: rgba(59, 73, 97, 0.6);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.theme-preview-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 18px;
+    background: rgba(249, 250, 255, 0.92);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.theme-preview-shell.theme-preview-dark .theme-preview-toolbar {
+    background: rgba(30, 41, 59, 0.92);
+    border-bottom-color: rgba(59, 73, 97, 0.55);
+}
+
+.theme-preview-window-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.theme-preview-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.theme-preview-dot.red { background: #ff5f57; }
+.theme-preview-dot.amber { background: #febb2e; }
+.theme-preview-dot.green { background: #28c840; }
+
+.theme-preview-shell.theme-preview-dark .theme-preview-dot.red { background: #ff6b6b; }
+.theme-preview-shell.theme-preview-dark .theme-preview-dot.amber { background: #ffd166; }
+.theme-preview-shell.theme-preview-dark .theme-preview-dot.green { background: #70e000; }
+
+.theme-preview-tabs {
+    display: inline-flex;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.theme-preview-tab {
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(148, 163, 184, 0.18);
+}
+
+.theme-preview-tab.active {
+    background: rgba(37, 99, 235, 0.15);
+    color: #1d4ed8;
+}
+
+.theme-preview-shell.theme-preview-dark .theme-preview-tabs {
+    color: #cbd5f5;
+}
+
+.theme-preview-shell.theme-preview-dark .theme-preview-tab {
+    background: rgba(96, 165, 250, 0.18);
+    color: #a5b4fc;
+}
+
+.theme-preview-shell.theme-preview-dark .theme-preview-tab.active {
+    background: rgba(59, 130, 246, 0.25);
+    color: #e0e7ff;
+}
+
+.theme-preview-icon {
+    font-size: 22px;
+    color: #2563eb;
+}
+
+.theme-preview-shell.theme-preview-dark .theme-preview-icon {
+    color: #93c5fd;
+}
+
+.theme-preview-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+}
+
+.theme-preview-pane {
+    padding: 18px 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.theme-preview-shell.theme-preview-compact .theme-preview-pane {
+    padding: 12px 16px 16px;
+    gap: 6px;
+}
+
+.theme-preview-line {
+    height: 10px;
+    border-radius: 6px;
+    background: rgba(148, 163, 184, 0.4);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.theme-preview-line.heading {
+    height: 14px;
+    width: 70%;
+    background: rgba(59, 130, 246, 0.3);
+}
+
+.theme-preview-line.medium { width: 85%; }
+.theme-preview-line.long { width: 95%; }
+.theme-preview-line.short { width: 55%; }
+
+.theme-preview-shell.theme-preview-dark .theme-preview-line {
+    background: rgba(148, 163, 184, 0.32);
+}
+
+.theme-preview-shell.theme-preview-dark .theme-preview-line.heading {
+    background: rgba(96, 165, 250, 0.38);
+}
+
+.theme-preview-card {
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.32);
+    background: rgba(255, 255, 255, 0.85);
+    padding: 18px 20px;
+    display: grid;
+    gap: 12px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.theme-preview-card-heading {
+    width: 60%;
+    height: 12px;
+    border-radius: 6px;
+    background: rgba(148, 163, 184, 0.45);
+}
+
+.theme-preview-card-line {
+    height: 10px;
+    border-radius: 6px;
+    background: rgba(148, 163, 184, 0.35);
+}
+
+.theme-preview-card-line.narrow {
+    width: 60%;
+}
+
+.theme-preview-card-chip-row {
+    display: inline-flex;
+    gap: 8px;
+}
+
+.theme-preview-chip {
+    width: 22px;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.38);
+}
+
+.theme-preview-shell.theme-preview-dark .theme-preview-card {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: rgba(59, 73, 97, 0.5);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.theme-preview-shell.theme-preview-dark .theme-preview-card-heading {
+    background: rgba(96, 165, 250, 0.42);
+}
+
+.theme-preview-shell.theme-preview-dark .theme-preview-card-line {
+    background: rgba(148, 163, 184, 0.32);
+}
+
+.theme-preview-shell.theme-preview-dark .theme-preview-chip {
+    background: rgba(96, 165, 250, 0.45);
+}
+
+.theme-preview-shell.theme-preview-compact .theme-preview-card {
+    padding: 14px 18px;
+    gap: 10px;
+}
+
+.theme-preview-shell.theme-preview-compact .theme-preview-card-chip-row {
+    gap: 6px;
+}
+
+.theme-preview-shell.theme-preview-compact .theme-preview-chip {
+    width: 20px;
+}
+
+.theme-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.theme-dialog-btn {
+    padding: 10px 22px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.theme-dialog-btn.secondary {
+    background: rgba(226, 232, 240, 0.7);
+    color: #475569;
+}
+
+.theme-dialog-btn.secondary:hover {
+    background: rgba(203, 213, 225, 0.95);
+    transform: translateY(-1px);
+}
+
+.theme-dialog-btn.primary {
+    background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+    color: #fff;
+    box-shadow: 0 12px 22px rgba(37, 99, 235, 0.25);
+}
+
+.theme-dialog-btn.primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 28px rgba(37, 99, 235, 0.3);
+}
+
+.theme-dialog-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+body.dark-mode #theme-dialog {
+    background: rgba(15, 23, 42, 0.96) !important;
+    border-color: rgba(59, 73, 97, 0.6) !important;
+}
+
+body.dark-mode .theme-dialog-body {
+    background: rgba(15, 23, 42, 0.94);
+    color: #e2e8f0;
+}
+
+body.dark-mode .theme-dialog-heading {
+    color: #e0f2fe;
+}
+
+body.dark-mode .theme-swatch {
+    background: rgba(15, 23, 42, 0.85);
+    border-color: rgba(59, 73, 97, 0.55);
+}
+
+body.dark-mode .theme-swatch:hover {
+    border-color: rgba(96, 165, 250, 0.55);
+    box-shadow: 0 12px 18px rgba(2, 6, 23, 0.45);
+}
+
+body.dark-mode .theme-swatch-name {
+    color: #e2e8f0;
+}
+
+body.dark-mode .theme-swatch-desc {
+    color: #94a3b8;
+}
+
+body.dark-mode .theme-swatch input:checked ~ .theme-swatch-name {
+    color: #93c5fd;
+}
+
+body.dark-mode .theme-dialog-section {
+    background: rgba(15, 23, 42, 0.88);
+    border-color: rgba(59, 73, 97, 0.5);
+}
+
+body.dark-mode .theme-section-title {
+    color: #cbd5f5;
+}
+
+body.dark-mode .theme-compact-checkbox {
+    background: rgba(30, 41, 59, 0.82);
+    border-color: rgba(59, 73, 97, 0.55);
+}
+
+body.dark-mode .theme-compact-title {
+    color: #e2e8f0;
+}
+
+body.dark-mode .theme-compact-desc {
+    color: #94a3b8;
+}
+
+body.dark-mode .theme-compact-checkbox input[type="checkbox"] {
+    accent-color: #4fc3f7;
+}
+
+body.dark-mode .theme-preview-area {
+    background: rgba(15, 23, 42, 0.92);
+    border-color: rgba(59, 73, 97, 0.6);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+body.dark-mode .theme-preview-title {
+    color: #e2e8f0;
+}
+
+body.dark-mode .theme-preview-subtitle,
+body.dark-mode .theme-preview-hint {
+    color: #94a3b8;
+}
+
+body.dark-mode .theme-dialog-btn.secondary {
+    background: rgba(30, 41, 59, 0.88);
+    color: #e2e8f0;
+}
+
+body.dark-mode .theme-dialog-btn.secondary:hover {
+    background: rgba(51, 65, 85, 0.95);
+}
+
+@media (max-width: 980px) {
+    .theme-dialog-grid {
+        flex-direction: column;
+    }
+
+    .theme-options-column,
+    .theme-preview-column {
+        flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 540px) {
+    .theme-dialog-body {
+        padding: 20px 18px 24px;
+    }
+
+    .theme-preview-body {
+        grid-template-columns: 1fr;
+    }
+
+    .theme-preview-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .theme-preview-hint {
+        text-align: left;
+    }
+}
+
 .print-dialog-shell {
     position: fixed;
     top: 50%;
@@ -122,7 +818,7 @@
 
 .print-card-helper {
     font-size: 12px;
-    color: #64748b;
+    color: #475569;
     line-height: 1.4;
 }
 
@@ -158,7 +854,7 @@
 
 .radio-description {
     font-size: 12px;
-    color: #64748b;
+    color: #475569;
 }
 
 .print-card-orientation {
@@ -338,7 +1034,7 @@
 
 .print-preview-meta {
     font-size: 12px;
-    color: #64748b;
+    color: #475569;
 }
 
 .print-dialog-preview-pane {
@@ -409,6 +1105,29 @@ body.dark-mode .print-preview-meta {
 body.dark-mode .print-card-options label span,
 body.dark-mode .radio-label {
     color: #e2e8f0;
+}
+
+body.dark-mode .print-custom-margin-panel {
+    background: rgba(30, 41, 59, 0.65);
+    border-color: rgba(71, 85, 105, 0.6);
+    box-shadow: inset 0 1px 0 rgba(30, 41, 59, 0.3);
+}
+
+body.dark-mode .print-custom-margin-grid label {
+    color: #cbd5f5;
+}
+
+body.dark-mode .print-custom-margin-grid input[type="number"],
+body.dark-mode .print-custom-margin-grid select {
+    background: rgba(15, 23, 42, 0.75);
+    border-color: rgba(71, 85, 105, 0.7);
+    color: #e2e8f0;
+}
+
+body.dark-mode .print-custom-margin-grid input[type="number"]:focus,
+body.dark-mode .print-custom-margin-grid select:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.25);
 }
 
 body.dark-mode .print-orientation-btn {
@@ -1015,6 +1734,24 @@ body.dark-mode ::-webkit-scrollbar-corner {
     background-color: #1e2225;
     color: #e0e0e0;
 }
+
+.dark-mode .preview-content table.table-borderless {
+    border: none;
+}
+
+.dark-mode .preview-content table.table-borderless th,
+.dark-mode .preview-content table.table-borderless td {
+    border: none;
+}
+
+.dark-mode .preview-content table.table-striped tbody tr:nth-child(even) {
+    background-color: #1a1d1f;
+}
+
+.dark-mode .preview-content table.table-header-highlight thead th {
+    background: linear-gradient(180deg, #1f2d3a 0%, #19232d 100%);
+    color: #4fc3f7;
+}
 .dark-mode .preview-content hr { border-top: 1px solid #444; }
 /* Dark mode custom checkbox */
 .dark-mode .preview-content li.task-item input[type="checkbox"] {
@@ -1428,63 +2165,6 @@ body.compact-mode .dialog-checkbox input[type="checkbox"] {
     background: #444 !important;
     color: #e0e0e0 !important;
     border-color: #666 !important;
-}
-
-.dark-mode #settings-dialog button {
-    background: #23272a !important;
-    color: #e0e0e0 !important;
-    border-color: #444 !important;
-    transition: all 0.2s !important;
-}
-
-.dark-mode #settings-dialog button:hover {
-    background: #4fc3f7 !important;
-    border-color: #23272a !important;
-}
-
-.dark-mode #settings-dialog #settings-save {
-    background: #4fc3f7 !important;
-    color: #23272a !important;
-}
-
-.dark-mode #settings-dialog #settings-save:hover {
-    background: #4fc3f7 !important;
-}
-
-.dark-mode #settings-dialog #settings-cancel {
-    background: #23272a !important;
-    color: #e0e0e0 !important;
-}
-
-.dark-mode #settings-dialog #settings-cancel:hover {
-    background: #545b62 !important;
-}
-
-.dark-mode #settings-dialog #export-settings {
-    background: #4fc3f7 !important;
-    color: #23272a !important;
-}
-
-.dark-mode #settings-dialog #export-settings:hover {
-    background: #4fc3f7 !important;
-}
-
-.dark-mode #settings-dialog #import-settings {
-    background: #4fc3f7 !important;
-    color: #23272a !important;
-}
-
-.dark-mode #settings-dialog #import-settings:hover {
-    background: #4fc3f7 !important;
-}
-
-.dark-mode #settings-dialog #reset-settings {
-    background: #4fc3f7 !important;
-    color: #23272a !important;
-}
-
-.dark-mode #settings-dialog #reset-settings:hover {
-    background: #4fc3f7 !important;
 }
 
 /* Theme buttons in settings dark mode */
@@ -2261,6 +2941,24 @@ button:hover:invalid,
     }
 }
 
+/* Popup header layout */
+.popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.popup-header .popup-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: inherit;
+}
+
+.popup-header .close-btn {
+    margin-left: auto;
+}
+
 /* Dialog Headers */
 #settings-dialog > div:first-child,
 #custom-alert > div:first-child,
@@ -2275,6 +2973,16 @@ button:hover:invalid,
     padding: 12px 16px !important;
     border-radius: 8px 8px 0 0 !important;
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset !important;
+}
+
+#find-replace-header {
+    cursor: move;
+}
+
+#theme-dialog-header {
+    padding: 14px 20px !important;
+    border-radius: 14px 14px 0 0 !important;
+    cursor: move;
 }
 
 /* Make settings title bar light in light mode only (keeps other dialog headers same) */
@@ -2293,24 +3001,145 @@ body:not(.dark-mode) #settings-dialog > div:first-child {
     padding: 24px !important;
 }
 
-/* Dialog Buttons */
-#custom-alert button,
-#image-cap-dialog button,
-#link-image-dialog button,
-#theme-dialog-cancel,
-#theme-dialog-apply {
-    background: rgba(255, 255, 255, 0.8);
+/* Popup buttons */
+.popup-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.popup-actions.center {
+    justify-content: center;
+}
+
+.popup-btn {
+    background: rgba(255, 255, 255, 0.82);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
     padding: 8px 20px;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
     outline: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #1f2937;
+}
+
+.popup-btn.secondary {
+    color: #1f2937;
+}
+
+.popup-btn.primary {
+    background: rgba(0, 120, 212, 0.95) !important;
+    color: #fff !important;
+    border: 1px solid rgba(0, 120, 212, 0.2) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
+}
+
+.popup-btn:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 120, 212, 0.2) !important;
+    transform: translateY(-0.5px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.7) inset !important;
+}
+
+.popup-btn.primary:hover {
+    background: rgba(16, 137, 229, 0.95) !important;
+}
+
+.popup-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
+}
+
+.popup-btn.primary:active {
+    background: rgba(10, 109, 182, 0.95) !important;
+}
+
+.popup-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.popup-btn.danger {
+    background: rgba(234, 67, 53, 0.95) !important;
+    color: #fff !important;
+    border: 1px solid rgba(234, 67, 53, 0.3) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
+}
+
+.popup-btn.danger:hover {
+    background: rgba(246, 80, 65, 0.97) !important;
+    border-color: rgba(234, 67, 53, 0.4) !important;
+}
+
+.popup-btn.danger:active {
+    background: rgba(217, 54, 43, 0.95) !important;
+}
+
+.dark-mode .popup-btn {
+    background: rgba(54, 58, 63, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #e2e8f0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+.dark-mode .popup-btn.secondary {
+    color: #e2e8f0;
+}
+
+.dark-mode .popup-btn.primary {
+    background: rgba(79, 195, 247, 0.95) !important;
+    border: 1px solid rgba(79, 195, 247, 0.35) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06) inset !important;
+    color: #0b1324 !important;
+}
+
+.dark-mode .popup-btn:hover {
+    background: rgba(66, 70, 76, 0.95);
+    border-color: rgba(79, 195, 247, 0.4) !important;
+    box-shadow: 0 2px 6px rgba(79, 195, 247, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.08) inset !important;
+}
+
+.dark-mode .popup-btn.primary:hover {
+    background: rgba(96, 208, 255, 0.95) !important;
+}
+
+.dark-mode .popup-btn:active {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
+}
+
+.dark-mode .popup-btn.primary:active {
+    background: rgba(63, 175, 224, 0.95) !important;
+}
+
+.dark-mode .popup-btn:disabled {
+    opacity: 0.45;
+    box-shadow: none;
+}
+
+.dark-mode .popup-btn.danger {
+    background: rgba(229, 72, 66, 0.96) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #0b1324 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08) inset !important;
+}
+
+.dark-mode .popup-btn.danger:hover {
+    background: rgba(242, 96, 90, 0.98) !important;
+    border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.dark-mode .popup-btn.danger:active {
+    background: rgba(214, 59, 53, 0.95) !important;
 }
 
 /* Prevent validation red borders on dialog buttons */
@@ -2476,7 +3305,7 @@ button:hover:invalid {
     background: rgba(0, 0, 0, 0.3) !important;
     backdrop-filter: blur(4px) !important;
     -webkit-backdrop-filter: blur(4px) !important;
-    z-index: 135000 !important;
+    z-index: 129000 !important;
     animation: overlayFadeIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
@@ -2536,29 +3365,6 @@ button:hover:invalid {
     -webkit-backdrop-filter: blur(20px) !important;
     color: inherit !important;
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset !important;
-}
-
-.dark-mode #custom-alert button,
-.dark-mode #image-cap-dialog button,
-.dark-mode #link-image-dialog button,
-.dark-mode #theme-dialog-cancel {
-    background: rgba(60, 64, 67, 0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #e0e0e0;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-}
-
-.dark-mode #custom-alert button:hover,
-.dark-mode #image-cap-dialog button:hover,
-.dark-mode #link-image-dialog button:hover,
-.dark-mode #theme-dialog-cancel:hover {
-    background: rgba(70, 74, 77, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-color: rgba(79, 195, 247, 0.3);
-    box-shadow: 0 2px 4px rgba(79, 195, 247, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
 }
 
 .dark-mode #image-cap-dialog input,
@@ -2769,7 +3575,7 @@ body.compact-mode #link-image-dialog {
 }
 
 body.compact-mode #theme-dialog {
-    width: 580px !important;
+    width: 1160px !important;
 }
 
 body.compact-mode .theme-preview-card .theme-preview {
@@ -4289,6 +5095,24 @@ body.dark-mode #theme-dialog-cancel:hover {
     font-weight: bold;
 }
 
+.preview-content table.table-borderless {
+    border: none;
+}
+
+.preview-content table.table-borderless th,
+.preview-content table.table-borderless td {
+    border: none;
+}
+
+.preview-content table.table-striped tbody tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+.preview-content table.table-header-highlight thead th {
+    background: linear-gradient(180deg, #e8f1fb 0%, #d4e6fb 100%);
+    color: #0b4a86;
+}
+
 .hidden-file-input {
     display: none;
 }
@@ -5344,141 +6168,3 @@ body.dark-mode.has-bg-image.mica-enabled::before {
     background: linear-gradient(135deg, rgba(15, 20, 26, 0.75) 0%, rgba(18, 24, 33, 0.75) 100%);
 }
 
-/* Settings toggle control - robust styles including disabled state
-   Supports common markup patterns:
-     <label class="settings-toggle"><input type="checkbox"> <span class="toggle-track"><span class="toggle-thumb"></span></span></label>
-   or
-     <input type="checkbox" id="t"><span class="toggle-track"><span class="toggle-thumb"></span></span>
-*/
-#settings-dialog .settings-toggle,
-#settings-dialog label.settings-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-}
-
-#settings-dialog .settings-toggle input[type="checkbox"],
-#settings-dialog input[type="checkbox"].settings-toggle {
-    /* keep the native checkbox accessible but visually hidden */
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-/* Visual track and thumb */
-#settings-dialog .toggle-track {
-    /* enforce fixed sizing/position inside settings regardless of inline styles */
-    width: 44px !important;
-    height: 24px !important;
-    max-width: 44px !important;
-    max-height: 24px !important;
-    background: #e6e6e6;
-    border-radius: 999px;
-    position: relative !important;
-    transition: background 180ms ease, opacity 180ms ease;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
-}
-
-#settings-dialog .toggle-thumb {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
-    transition: transform 180ms ease, background 180ms ease;
-}
-
-/* Support existing inline-span markup used in the HTML:
-   <label ...>
-     <input type="checkbox">
-     <span></span>  <-- track
-     <span></span>  <-- thumb
-   </label>
-*/
-#settings-dialog input[type="checkbox"] + span {
-    /* make anonymous first span behave like .toggle-track; enforce sizing to avoid inline-style overrides */
-    width: 44px !important;
-    height: 24px !important;
-    max-width: 44px !important;
-    max-height: 24px !important;
-    background: #e6e6e6;
-    border-radius: 999px;
-    position: relative !important;
-    display: inline-block;
-    transition: background 180ms ease, opacity 180ms ease;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
-}
-
-#settings-dialog input[type="checkbox"] + span + span,
-#settings-dialog input[type="checkbox"] + span > .toggle-thumb {
-    /* anonymous second span behaves like .toggle-thumb when present */
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
-    transition: transform 180ms ease, background 180ms ease;
-}
-
-/* Checked state (covers .toggle-track and anonymous span patterns) */
-#settings-dialog input[type="checkbox"]:checked + .toggle-track,
-#settings-dialog label.settings-toggle input[type="checkbox"]:checked + .toggle-track,
-#settings-dialog input[type="checkbox"]:checked + span,
-#settings-dialog input[type="checkbox"]:checked + span + span {
-    background-color: #007acc;
-}
-
-#settings-dialog input[type="checkbox"]:checked + .toggle-track .toggle-thumb,
-#settings-dialog label.settings-toggle input[type="checkbox"]:checked + .toggle-track .toggle-thumb,
-#settings-dialog input[type="checkbox"]:checked + span + span,
-#settings-dialog input[type="checkbox"]:checked + span > .toggle-thumb {
-    transform: translateX(20px);
-}
-
-/* Disabled appearance: separate, explicit style */
-#settings-dialog input[type="checkbox"][disabled] + .toggle-track,
-#settings-dialog label.settings-toggle input[type="checkbox"][disabled] + .toggle-track,
-#settings-dialog input[type="checkbox"][disabled] + span,
-#settings-dialog input[type="checkbox"][disabled] + span + span,
-#settings-dialog .settings-toggle.disabled .toggle-track {
-    background: #dcdcdc;
-    opacity: 0.7;
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
-#settings-dialog input[type="checkbox"][disabled] + .toggle-track .toggle-thumb,
-#settings-dialog label.settings-toggle input[type="checkbox"][disabled] + .toggle-track .toggle-thumb,
-#settings-dialog input[type="checkbox"][disabled] + span + span,
-#settings-dialog .settings-toggle.disabled .toggle-thumb {
-    background: #ffffff;
-    box-shadow: none;
-}
-
-/* Dark-mode adjustments for disabled toggles */
-body.dark-mode #settings-dialog input[type="checkbox"][disabled] + .toggle-track,
-body.dark-mode #settings-dialog .settings-toggle.disabled .toggle-track,
-body.dark-mode #settings-dialog input[type="checkbox"][disabled] + span,
-body.dark-mode #settings-dialog input[type="checkbox"][disabled] + span + span {
-    background: #2b2b2b;
-    opacity: 0.55;
-}
-
-body.dark-mode #settings-dialog input[type="checkbox"][disabled] + .toggle-track .toggle-thumb,
-body.dark-mode #settings-dialog .settings-toggle.disabled .toggle-thumb,
-body.dark-mode #settings-dialog input[type="checkbox"][disabled] + span + span {
-    background: #ffffff !important;
-}
