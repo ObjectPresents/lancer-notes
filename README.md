@@ -7,6 +7,7 @@ Any feedbacks can go to: @objectpresents (Discord), objectpresents.bsky.social (
 
 ## Changelogs:
 #### v2.2.0 (25/11/2025)
+- Feature updates in v2.2.0:
 	- Preview-pane editing with real-time synchronization and improved markdown conversion fidelity
 	- Fresh bidirectional editing workflow plus foundational table authoring tools
 	- Expanded shared popup framework (headers, buttons, dark mode) across dialogs and settings
