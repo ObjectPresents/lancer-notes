@@ -1175,7 +1175,7 @@ Happy writing!"></textarea>
 </div>
 
 <!-- Theme Dialog -->
-<div id="theme-dialog" class="draggable-dialog" style="display:none;position:fixed;top:15%;left:50%;transform:translateX(-50%);width:1760px;max-width:94vw;max-height:80vh;z-index:130000;background:rgba(255,255,255,0.9);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);border:1px solid rgba(0,0,0,0.06);box-shadow:0 8px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.5) inset;border-radius:14px;overflow:visible;">
+<div id="theme-dialog" class="draggable-dialog" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(1400px, 92vw);max-height:90vh;z-index:130000;background:rgba(255,255,255,0.9);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);border:1px solid rgba(0,0,0,0.06);box-shadow:0 8px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.5) inset;border-radius:14px;overflow:hidden;flex-direction:column;">
     <div id="theme-dialog-header" class="dialog-header popup-header">
         <span class="popup-title" style="letter-spacing:0.3px;">Theme Selector</span>
         <button id="theme-dialog-close" class="close-btn" title="Close">&times;</button>
@@ -1373,7 +1373,7 @@ Happy writing!"></textarea>
             <!-- Editor Settings -->
             <div class="settings-section" data-section="editor" style="display:none;padding:32px 48px;">
                 <h2 style="margin:0 0 8px 0;font-size:24px;font-weight:400;color:#202124;">Editor</h2>
-                <p style="margin:0 0 32px 0;color:#5f6368;font-size:14px;">Configure editor behavior and display options</p>
+                <p style="margin:0 0 32px 0;color:#5f6368;font-size:14px;">Configure editor behavior and display options</p> 
                 
                 <div style="margin-bottom:32px;">
                     <h3 style="margin:0 0 16px 0;font-size:16px;font-weight:500;color:#202124;">Editing</h3>
@@ -1788,7 +1788,7 @@ console.log(doubled); // [2, 4, 6, 8, 10]</div>
                 <div style="background:#f8f9fa;border:1px solid #dadce0;border-radius:8px;padding:24px;text-align:center;">
                     <div style="font-size:48px;margin-bottom:16px;">📝</div>
                     <h3 style="margin:0 0 8px 0;font-size:20px;font-weight:500;color:#202124;">Lancer Notes</h3>
-                    <div style="font-size:16px;color:#5f6368;margin-bottom:16px;">Version 2.2</div>
+                    <div style="font-size:16px;color:#5f6368;margin-bottom:16px;">Version 2.2.3</div>
                     <div style="font-size:14px;color:#5f6368;line-height:1.5;">
                         A modern markdown editor designed for students and educational use.<br>
                         Built with HTML, CSS, and JavaScript.<br>
@@ -2594,7 +2594,7 @@ console.log(doubled); // [2, 4, 6, 8, 10]</div>
     };
     
     // Version information
-    const CURRENT_VERSION = '2.2.2';
+    const CURRENT_VERSION = '2.2.3';
     const GITHUB_RELEASES_API = 'https://api.github.com/repos/ObjectPresents/lancer-notes/releases/latest';
     
     // Local changelog HTML (structured with modern styling)
@@ -2610,12 +2610,17 @@ console.log(doubled); // [2, 4, 6, 8, 10]</div>
 <div class="changelog-versions">
     <div class="version-item og-version">
         <div class="version-header">
-            <span class="version-number">v2.2</span>
-            <span class="version-date">November 2025 🚀</span>
+            <span class="version-number">v2.2.3</span>
+            <span class="version-date">November 27, 2025 🐛</span>
         </div>
         <div class="version-content">
             <ul>
-                <li><strong>New in v2.2 (beyond v2.1.4):</strong>
+                <li><strong>Bug Fixes in v2.2.3:</strong>
+                    <ul>
+                        <li>Fixed theme dialog auto-opening on page load - removed duplicate display:flex property</li>
+                    </ul>
+                </li>
+                <li><strong>Features from v2.2 (beyond v2.1.4):</strong>
                     <ul>
                         <li>Preview-pane editing with real-time synchronization and improved markdown conversion fidelity</li>
                         <li>Fresh bidirectional editing workflow plus foundational table authoring tools</li>
@@ -5997,16 +6002,60 @@ console.log(doubled); // [2, 4, 6, 8, 10]</div>
             const escapedCode = code.replace(/</g, '&lt;').replace(/>/g, '&gt;');
             
             if (isSyntaxHighlighterEnabled && lang && typeof Prism !== 'undefined') {
-                // Map common language aliases
+                // Extended language mapping with aliases
                 const langMap = {
+                    // Scripting & Web
                     'js': 'javascript',
+                    'javascript': 'javascript',
                     'ts': 'typescript',
+                    'typescript': 'typescript',
+                    'jsx': 'jsx',
+                    'tsx': 'tsx',
                     'py': 'python',
+                    'python': 'python',
                     'rb': 'ruby',
+                    'ruby': 'ruby',
+                    'php': 'php',
+                    'perl': 'perl',
+                    'go': 'go',
+                    'rust': 'rust',
+                    // Shell & Commands
                     'sh': 'bash',
+                    'bash': 'bash',
+                    'zsh': 'bash',
+                    'shell': 'bash',
+                    'powershell': 'powershell',
+                    'ps1': 'powershell',
+                    // Markup & Styling
                     'html': 'markup',
                     'xml': 'markup',
-                    'cs': 'csharp'
+                    'svg': 'markup',
+                    'css': 'css',
+                    'scss': 'scss',
+                    'sass': 'sass',
+                    'less': 'less',
+                    // Data & Config
+                    'json': 'json',
+                    'yaml': 'yaml',
+                    'yml': 'yaml',
+                    'toml': 'toml',
+                    'ini': 'ini',
+                    'sql': 'sql',
+                    'xml': 'markup',
+                    // Compiled Languages
+                    'java': 'java',
+                    'cs': 'csharp',
+                    'csharp': 'csharp',
+                    'c': 'c',
+                    'cpp': 'cpp',
+                    'cc': 'cpp',
+                    'swift': 'swift',
+                    'kotlin': 'kotlin',
+                    // Markup & Templating
+                    'markdown': 'markdown',
+                    'md': 'markdown',
+                    'handlebars': 'handlebars',
+                    'hbs': 'handlebars'
                 };
                 const normalizedLang = langMap[lang.toLowerCase()] || lang.toLowerCase();
                 
@@ -6014,20 +6063,46 @@ console.log(doubled); // [2, 4, 6, 8, 10]</div>
                 if (Prism.languages[normalizedLang]) {
                     try {
                         const highlighted = Prism.highlight(code, Prism.languages[normalizedLang], normalizedLang);
-                        return `<pre><code class="language-${normalizedLang}">${highlighted}</code></pre>`;
+                        const lines = highlighted.split('\n');
+                        const lineNumbers = lines.map((_, i) => i + 1).join('\n');
+                        
+                        return `<div class="code-block-wrapper">
+                            <div class="code-block-header">
+                                <span class="code-block-lang">${normalizedLang}</span>
+                                <button class="code-copy-btn" title="Copy code">
+                                    <span class="material-symbols-outlined">content_copy</span>
+                                </button>
+                            </div>
+                            <pre class="code-block-container"><code class="language-${normalizedLang} code-highlighted" data-lang="${normalizedLang}">${highlighted}</code></pre>
+                        </div>`;
                     } catch (e) {
-                        // Fallback to non-highlighted if error occurs
-                        return `<pre><code class="language-${normalizedLang}">${escapedCode}</code></pre>`;
+                        console.error('Syntax highlighting error:', e);
+                        return `<div class="code-block-wrapper">
+                            <div class="code-block-header">
+                                <span class="code-block-lang">${normalizedLang}</span>
+                            </div>
+                            <pre class="code-block-container"><code class="language-${normalizedLang}">${escapedCode}</code></pre>
+                        </div>`;
                     }
                 } else {
-                    return `<pre><code class="language-${normalizedLang}">${escapedCode}</code></pre>`;
+                    return `<div class="code-block-wrapper">
+                        <div class="code-block-header">
+                            <span class="code-block-lang">${normalizedLang}</span>
+                        </div>
+                        <pre class="code-block-container"><code class="language-${normalizedLang}">${escapedCode}</code></pre>
+                    </div>`;
                 }
             } else {
                 // No syntax highlighting - basic code block
                 if (lang) {
-                    return `<pre><code class="language-${lang}">${escapedCode}</code></pre>`;
+                    return `<div class="code-block-wrapper">
+                        <div class="code-block-header">
+                            <span class="code-block-lang">${lang}</span>
+                        </div>
+                        <pre class="code-block-container"><code class="language-${lang}">${escapedCode}</code></pre>
+                    </div>`;
                 }
-                return `<pre><code>${escapedCode}</code></pre>`;
+                return `<pre class="code-block-container"><code>${escapedCode}</code></pre>`;
             }
         });
         
@@ -6408,9 +6483,49 @@ console.log(doubled); // [2, 4, 6, 8, 10]</div>
         // Add event listeners to task checkboxes to make them interactive
         attachTaskCheckboxListeners();
         
+        // Add event listeners to code copy buttons
+        attachCodeCopyButtonListeners();
+        
         setTimeout(() => {
             isUpdatingFromEditor = false;
         }, 100);
+    }
+    
+    // Add copy button functionality to code blocks
+    function attachCodeCopyButtonListeners() {
+        document.querySelectorAll('.code-copy-btn').forEach(btn => {
+            btn.removeEventListener('click', handleCodeCopy);
+            btn.addEventListener('click', handleCodeCopy);
+        });
+    }
+    
+    function handleCodeCopy(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const btn = e.currentTarget;
+        const codeBlock = btn.closest('.code-block-wrapper').querySelector('code');
+        
+        // Get the text content and remove HTML tags (for highlighted code)
+        let text = codeBlock.textContent;
+        
+        // Copy to clipboard
+        navigator.clipboard.writeText(text).then(() => {
+            // Visual feedback
+            const originalIcon = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined">check</span>';
+            btn.style.color = '#4caf50';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalIcon;
+                btn.style.color = '';
+            }, 1500);
+            
+            updateStatus('Code copied to clipboard');
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            updateStatus('Failed to copy code');
+        });
     }
 
     // Convert HTML back to markdown (simplified version)
@@ -6723,6 +6838,7 @@ console.log(doubled); // [2, 4, 6, 8, 10]</div>
             }
         }
     }
+// i want to kill myself, pls i hate my life
 
     // File operations
     function newFile() {
