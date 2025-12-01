@@ -6,6 +6,9 @@ Project completed by 100% solo with moderate use of AI, templates and inspriatio
 Any feedbacks can go to: objectpresents.bsky.social (Bluesky) or lightingperson_2763@outlook.com.vn
 
 ## Changelogs:
+#### v2.2.3 (1/12/2025)
+- Bug Fixes in v2.2.3:
+	- Fixed theme dialog auto-opening on page load - removed duplicate display:flex property
 #### v2.2.0 (25/11/2025)
 - Feature updates in v2.2.0:
 	- Preview-pane editing with real-time synchronization and improved markdown conversion fidelity
