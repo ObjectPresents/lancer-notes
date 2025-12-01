@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lancer Notes - Help & Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .sidebar h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #007acc;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .sidebar nav ul {
+            list-style: none;
+        }
+        
+        .sidebar nav li {
+            margin-bottom: 8px;
+        }
+        
+        .sidebar nav a {
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .sidebar nav a:hover {
+            background: #e0e0e0;
+            color: #007acc;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 40px 60px;
+            max-width: 1200px;
+        }
+        
+        .content h1 {
+            font-size: 2.5em;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            font-weight: 300;
+        }
+        
+        .content h2 {
+            font-size: 1.8em;
+            color: #1a1a1a;
+            margin-top: 48px;
+            margin-bottom: 16px;
+            font-weight: 400;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 8px;
+        }
+        
+        .content h3 {
+            font-size: 1.3em;
+            color: #333;
+            margin-top: 32px;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        
+        .content p {
+            margin-bottom: 16px;
+            color: #555;
+            font-size: 15px;
+        }
+        
+        .code-block {
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 16px 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #007acc;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .info-box p {
+            color: #1565c0;
+            margin: 0;
+        }
+        
+        .shortcut-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .shortcut-table th,
+        .shortcut-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .shortcut-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .shortcut-table td {
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .shortcut-table kbd {
+            background: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .help-search-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+        
+        .help-search-input {
+            min-width: 240px;
+            padding: 8px 14px;
+            border: 1px solid #ccc;
+            border-radius: 999px;
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .help-search-input:focus {
+            outline: none;
+            border-color: #007acc;
+            box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.2);
+        }
+        
+        .help-search-clear {
+            padding: 8px 16px;
+            border: 1px solid #ccc;
+            border-radius: 999px;
+            background: #f5f5f5;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        
+        .help-search-clear:hover {
+            background: #e0e0e0;
+            border-color: #bbb;
+        }
+        
+        .help-search-count {
+            font-size: 12px;
+            color: #666;
+            min-width: 70px;
+            text-align: right;
+        }
+        
+        .content .search-match {
+            background: #fff3cd;
+            transition: background 0.2s;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
+        }
+        
+        .feature-card {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .feature-card h4 {
+            color: #007acc;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .feature-card p {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+        }
+        
+        /* Dark mode styles */
+        body.dark-mode {
+            background: #101214;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .sidebar {
+            background: #181a1b;
+            border-right-color: #444;
+        }
+        
+        body.dark-mode .sidebar h2 {
+            color: #4fc3f7;
+        }
+        
+        body.dark-mode .sidebar nav a {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .sidebar nav a:hover {
+            background: #23272a;
+            color: #4fc3f7;
+        }
+        
+        body.dark-mode .content h1,
+        body.dark-mode .content h2,
+        body.dark-mode .content h3 {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .content h2 {
+            border-bottom-color: #444;
+        }
+        
+        body.dark-mode .content p,
+        body.dark-mode .content ul,
+        body.dark-mode .content li {
+            color: #b0b0b0;
+        }
+        
+        body.dark-mode .code-block {
+            background: #1a1d1f;
+            border-color: #444;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .info-box {
+            background: #1a2633;
+            border-left-color: #4fc3f7;
+        }
+        
+        body.dark-mode .info-box p {
+            color: #4fc3f7;
+        }
+        
+        body.dark-mode .shortcut-table th {
+            background: #181a1b;
+            color: #e0e0e0;
+            border-bottom-color: #444;
+        }
+        
+        body.dark-mode .shortcut-table td {
+            color: #b0b0b0;
+            border-bottom-color: #444;
+        }
+        
+        body.dark-mode .shortcut-table kbd {
+            background: #23272a;
+            border-color: #444;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .help-search-input {
+            background: #101214;
+            color: #e0e0e0;
+            border-color: #444;
+        }
+        
+        body.dark-mode .help-search-input:focus {
+            border-color: #4fc3f7;
+            box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.2);
+        }
+        
+        body.dark-mode .help-search-clear {
+            background: #23272a;
+            border-color: #444;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .help-search-clear:hover {
+            background: #2d3136;
+            border-color: #555;
+        }
+        
+        body.dark-mode .help-search-count {
+            color: #b0b0b0;
+        }
+        
+        body.dark-mode .content .search-match {
+            background: #2a2a12;
+        }
+        
+        body.dark-mode .feature-card {
+            background: #181a1b;
+            border-color: #444;
+        }
+        
+        body.dark-mode .feature-card h4 {
+            color: #4fc3f7;
+        }
+        
+        body.dark-mode .feature-card p {
+            color: #b0b0b0;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Detect dark mode from parent window (markdown editor)
+        function syncDarkMode() {
+            try {
+                // Check if we're in an iframe and can access parent
+                if (window.parent && window.parent !== window) {
+                    const parentBody = window.parent.document.body;
+                    const isDarkMode = parentBody.classList.contains('dark-mode');
+                    
+                    if (isDarkMode) {
+                        document.body.classList.add('dark-mode');
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                    }
+                }
+            } catch (e) {
+                // If we can't access parent (cross-origin), do nothing
+                console.log('Cannot access parent window for dark mode detection');
+            }
+        }
+        
+        // Sync on load
+        syncDarkMode();
+        
+        // Watch for changes in parent window
+        setInterval(syncDarkMode, 500);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('help-search-input');
+            const searchClearBtn = document.getElementById('help-search-clear');
+            const searchCount = document.getElementById('help-search-count');
+            const contentRoot = document.querySelector('.content');
+            if (!searchInput || !searchClearBtn || !contentRoot) return;
+
+            let currentMatches = [];
+            let activeMatchIndex = -1;
+
+            const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+            const updateMatchCount = () => {
+                if (!currentMatches.length) {
+                    searchCount.textContent = 'No matches';
+                    return;
+                }
+                searchCount.textContent = `${activeMatchIndex + 1} of ${currentMatches.length}`;
+            };
+
+            const clearMatches = () => {
+                currentMatches.forEach(span => {
+                    const parent = span.parentNode;
+                    parent.replaceChild(document.createTextNode(span.textContent), span);
+                    parent.normalize();
+                });
+                currentMatches = [];
+                activeMatchIndex = -1;
+                searchCount.textContent = '';
+            };
+
+            const highlightMatches = (query) => {
+                if (!query) return;
+                const walker = document.createTreeWalker(contentRoot, NodeFilter.SHOW_TEXT, {
+                    acceptNode(node) {
+                        if (!node.textContent || !node.parentElement) return NodeFilter.FILTER_REJECT;
+                        if (node.parentElement.closest('.help-search-bar')) return NodeFilter.FILTER_REJECT;
+                        if (node.textContent.trim().length === 0) return NodeFilter.FILTER_REJECT;
+                        return NodeFilter.FILTER_ACCEPT;
+                    }
+                });
+
+                const regex = new RegExp(escapeRegex(query), 'gi');
+                const fragments = [];
+
+                while (walker.nextNode()) {
+                    const textNode = walker.currentNode;
+                    const text = textNode.textContent;
+                    let match;
+                    regex.lastIndex = 0;
+                    while ((match = regex.exec(text)) !== null) {
+                        fragments.push({ node: textNode, start: match.index, end: match.index + match[0].length });
+                    }
+                }
+
+                for (let i = fragments.length - 1; i >= 0; i--) {
+                    const { node, start, end } = fragments[i];
+                    const span = document.createElement('span');
+                    span.className = 'search-match';
+                    span.textContent = node.textContent.slice(start, end);
+                    node.splitText(end);
+                    const matchText = node.splitText(start);
+                    matchText.parentNode.replaceChild(span, matchText);
+                    currentMatches.unshift(span);
+                }
+
+                if (currentMatches.length) {
+                    activeMatchIndex = 0;
+                    currentMatches[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    updateMatchCount();
+                } else {
+                    searchCount.textContent = 'No matches';
+                }
+            };
+
+            const handleSearchInput = () => {
+                const query = searchInput.value.trim();
+                clearMatches();
+                if (query.length < 2) {
+                    searchCount.textContent = query.length ? 'Type 2+ chars' : '';
+                    return;
+                }
+                highlightMatches(query);
+            };
+
+            searchInput.addEventListener('input', () => {
+                window.requestAnimationFrame(handleSearchInput);
+            });
+
+            searchInput.addEventListener('keydown', (e) => {
+                if (!currentMatches.length) return;
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    activeMatchIndex = e.shiftKey
+                        ? (activeMatchIndex - 1 + currentMatches.length) % currentMatches.length
+                        : (activeMatchIndex + 1) % currentMatches.length;
+                    currentMatches[activeMatchIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    updateMatchCount();
+                }
+            });
+
+            searchClearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                clearMatches();
+                searchInput.focus();
+            });
+        });
+    </script>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>Documentation</h2>
+            <nav>
+                <ul>
+                    <li><a href="#overview">Overview</a></li>
+                    <li><a href="#getting-started">Getting Started</a></li>
+                    <li><a href="#markdown-basics">Markdown Basics</a></li>
+                    <li><a href="#lancer-notes-format">Lancer Notes Format (.st)</a></li>
+                    <li><a href="#formatting">Text Formatting</a></li>
+                    <li><a href="#headings">Headings</a></li>
+                    <li><a href="#lists">Lists</a></li>
+                    <li><a href="#links-images">Links & Images</a></li>
+                    <li><a href="#tables">Tables</a></li>
+                    <li><a href="#context-menu">Right-Click Menu</a></li>
+                    <li><a href="#features">Advanced Features</a></li>
+                    <li><a href="#shortcuts">Keyboard Shortcuts</a></li>
+                    <li><a href="#tips">Tips & Tricks</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="content">
+            <div class="help-search-bar">
+                <input type="search" id="help-search-input" class="help-search-input" placeholder="Search documentation..." aria-label="Search help topics">
+                <button type="button" id="help-search-clear" class="help-search-clear">Clear</button>
+                <span id="help-search-count" class="help-search-count" aria-live="polite"></span>
+            </div>
+            <h1 id="overview">Lancer Notes Documentation</h1>
+            <p>Welcome to Lancer Notes - a powerful, modern Markdown editor with real-time preview and comprehensive settings management. Features include advanced table operations, auto-save functionality, zoom controls, and a complete settings system.</p>
+
+            
+            <h2 id="getting-started">Getting Started</h2>
+            <p>Lancer Notes provides an intuitive interface for creating and editing Markdown documents. The editor is split into two panes: the editor on the left and the live preview on the right.</p>
+            
+            <div class="info-box">
+                <p><strong>💡 Pro Tip:</strong> Both the editor and preview panes are editable! You can type in either pane and changes sync automatically.</p>
+            </div>
+            
+            <h2 id="markdown-basics">Markdown Basics</h2>
+            <p>Markdown is a lightweight markup language that lets you format text using simple syntax. Here are the essentials:</p>
+            
+            <h3 id="formatting">Text Formatting</h3>
+            <pre class="code-block">**Bold Text** - Wrap text with double asterisks
+*Italic Text* - Wrap text with single asterisks
+~~Strikethrough~~ - Wrap text with double tildes
+`Code` - Wrap text with backticks
+~Subscript~ - Wrap text with single tildes
+^Superscript^ - Wrap text with carets</pre>
+            
+            <h2 id="lancer-notes-format">Lancer Notes Structured Text (.st)</h2>
+            <p>Lancer Notes Structured Text (LNST) is the enhanced Markdown format used by Lancer Notes. It keeps standard Markdown readable while unlocking richer features when opened in the editor.</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Core Principles</h4>
+                    <ul style="margin-left:18px; line-height:1.6; font-size:13px;">
+                        <li>Markdown foundation for headings, emphasis, lists, links, and images</li>
+                        <li>Progressive enhancement: features activate when extensions are enabled</li>
+                        <li>Readable source text that degrades gracefully outside Lancer Notes</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>File Details</h4>
+                    <ul style="margin-left:18px; line-height:1.6; font-size:13px;">
+                        <li>Extension: <code>.st</code></li>
+                        <li>MIME type: <code>text/x-lancer-structured-text</code></li>
+                        <li>UTF-8 encoding recommended</li>
+                        <li>Supports auto-save, Save, Save As, and Import flows in v2.2+</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>Enhanced Features</h4>
+                    <ul style="margin-left:18px; line-height:1.6; font-size:13px;">
+                        <li>Tables with optional formatting flags (<code>striped</code>, <code>no-borders</code>, <code>header-highlight</code>)</li>
+                        <li>Image positioning via <code>{left}</code>, <code>{right}</code>, <code>{center}</code> and info badges</li>
+                        <li>Footnotes, definition lists, superscript/subscript, and highlights (Extended Markdown)</li>
+                        <li>Task list checkboxes (Extended Markdown or GFM)</li>
+                        <li>Syntax-highlighted code blocks when the Prism extension is enabled</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <p><strong>Saving & Importing:</strong> Use <em>File → Save</em> or <em>Save As</em> to write notes with a <code>.st</code> extension. The editor can open <code>.st</code>, <code>.md</code>, and <code>.txt</code> files via <em>File → Open</em> or drag-and-drop.</p>
+            </div>
+
+            <p>LNST documents remain compatible with standard Markdown readers—extended elements appear as readable fallbacks. Inside Lancer Notes, enable extensions under <strong>Extensions → Manage</strong> to unlock superscripts, footnotes, and other advanced behaviors.</p>
+
+            <h3 id="headings">Headings</h3>
+            <p>Use the heading dropdown in the toolbar to insert headings from H1 to H6. The button shows your current heading level.</p>
+            <pre class="code-block"># Heading 1 - Main title
+## Heading 2 - Section header
+### Heading 3 - Subsection
+#### Heading 4 - Minor section
+##### Heading 5 - Small section
+###### Heading 6 - Tiny section</pre>
+            
+            <h3 id="lists">Lists</h3>
+            <p>Create bullet lists, numbered lists, and task lists:</p>
+            <pre class="code-block">- Bullet point
+- Another point
+  - Nested point
+
+1. First item
+2. Second item
+3. Third item
+
+- [ ] Unchecked task
+- [x] Checked task</pre>
+            
+            <h3 id="links-images">Links & Images</h3>
+            <pre class="code-block">[Link text](https://example.com)
+![Alt text](image-url.jpg)
+
+# Image Positioning
+![Alt text](image.jpg){left}    # Float image to the left
+![Alt text](image.jpg){right}   # Float image to the right
+![Alt text](image.jpg){center}  # Center the image
+
+# Clear floats after wrapped images
+---clear---</pre>
+            <div class="info-box">
+                <p><strong>Image Auto-Resize:</strong> Enable auto-resize in the image dialog to automatically optimize image sizes for your document.</p>
+                <p><strong>Image Positioning:</strong> Add <code>{left}</code>, <code>{right}</code>, or <code>{center}</code> after the image syntax to control positioning. Use <code>---clear---</code> to clear floats and ensure content appears below wrapped images.</p>
+            </div>
+            <div class="info-box" style="background:#fff3cd;border-color:#ffc107;">
+                <p style="color:#856404;"><strong>⚠️ Compatibility Notice:</strong> Image positioning syntax (<code>{left}</code>, <code>{right}</code>, <code>{center}</code>) is a <strong>custom extension</strong> designed for Lancer Notes and is <strong>NOT part of standard Markdown or GitHub Flavored Markdown</strong>. This feature is specifically designed to make document layout easier for students and educational use. If you export your markdown to other editors or platforms, these positioning tags will not work and should be removed for compatibility.</p>
+            </div>
+            
+            <h3 id="tables">Tables</h3>
+            <p>Create and manage tables using the comprehensive table dropdown. Click the table button to access advanced operations:</p>
+            
+            <div class="info-box">
+                <p><strong>📊 Table Operations Available:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 12px;">
+                    <li><strong>Insert Custom Table:</strong> Create tables with custom rows and columns</li>
+                    <li><strong>Insert Quick Table:</strong> 3x3 table for rapid prototyping</li>
+                    <li><strong>Add Row/Column:</strong> Add rows above/below or columns left/right</li>
+                    <li><strong>Delete Row/Column:</strong> Remove current row or column</li>
+                    <li><strong>Align Columns:</strong> Left, center, or right alignment options</li>
+                </ul>
+            </div>
+            
+            <pre class="code-block">| Header 1 | Header 2 | Header 3 |
+|----------|----------|----------|
+| Cell 1   | Cell 2   | Cell 3   |
+| Cell 4   | Cell 5   | Cell 6   |
+
+Left-aligned: |:---------|
+Center-aligned: |:--------:|
+Right-aligned: |---------:|</pre>
+            
+            <p><strong>💡 Pro Tip:</strong> Use the table dropdown's alignment options to format your table columns professionally. The dropdown shows a preview of available operations and highlights future features coming soon.</p>
+            
+            <h3 id="context-menu">Right-Click Context Menu</h3>
+            <p>Right-click anywhere in the editor or preview to open Lancer's custom context menu. The default browser menu is disabled; use the items below for the most common editor and browser-like actions.</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Main Menu (Markdown Actions)</h4>
+                    <ul style="margin-left: 18px; line-height: 1.7;">
+                        <li>Cut / Copy / Paste — Standard clipboard operations</li>
+                        <li>Select All — Select all text in the current pane</li>
+                        <li>Bold / Italic / Code — Quick text formatting</li>
+                        <li>Insert Link / Insert Image — Add media to your document</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>Show More Options (Browser Actions)</h4>
+                    <ul style="margin-left: 18px; line-height: 1.7;">
+                        <li>Back / Forward — Browser navigation (<kbd>Alt</kbd> + <kbd>←</kbd> / <kbd>Alt</kbd> + <kbd>→</kbd>)</li>
+                        <li>Reload — Refresh the page (<kbd>Ctrl</kbd> + <kbd>R</kbd>)</li>
+                        <li>Save as… / Print — File operations (<kbd>Ctrl</kbd> + <kbd>S</kbd> / <kbd>Ctrl</kbd> + <kbd>P</kbd>)</li>
+                        <li>Find / Undo / Redo — Common actions (<kbd>Ctrl</kbd> + <kbd>F</kbd> / <kbd>Ctrl</kbd> + <kbd>Z</kbd> / <kbd>Ctrl</kbd> + <kbd>Y</kbd>)</li>
+                        <li>View page source / Inspect — Developer tools (<kbd>Ctrl</kbd> + <kbd>U</kbd> / <kbd>F12</kbd>)</li>
+                    </ul>
+                </div>
+            </div>
+                
+                <h2 id="features">Advanced Features</h2>
+                
+                
+                
+                <div class="feature-grid">
+                    
+                    
+                    <div class="feature-card">
+                        <h4>Auto-Save Functionality</h4>
+                        <p>Automatically save your work to localStorage every 30 seconds. Never lose your content again with configurable auto-save intervals.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>Zoom Controls</h4>
+                        <p>Adjust text size with zoom in/out buttons and keyboard shortcuts (Ctrl +/-/0). Zoom level persists between sessions for consistent readability.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>Word Wrap</h4>
+                        <p>Toggle word wrap to prevent horizontal scrolling. Works in both editor and preview panes. Code blocks remain scrollable for better readability of long code lines.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>Image Auto-Resize</h4>
+                        <p>Automatically resize images to fit your document. Configure maximum width via Image Cap button.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>Find & Replace</h4>
+                        <p>Powerful search with regex support, case sensitivity options, and match highlighting.</p>
+                    </div>
+                    
+                    
+                    
+                    <div class="feature-card">
+                        <h4>Undo/Redo History</h4>
+                        <p>Hover over undo/redo buttons to see your edit history and jump to any previous state.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>Live Preview Editing</h4>
+                        <p>Edit directly in the preview pane. Changes sync automatically with the markdown editor.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>Right-Click Context Menu</h4>
+                        <p>Custom context menu with markdown actions and browser-like features. Mimics standard browser right-click (Back, Forward, Reload, Print, Inspect) for security while providing quick markdown formatting.</p>
+                    </div>
+                </div>
+                
+                <h2 id="shortcuts">Keyboard Shortcuts</h2>
+                <table class="shortcut-table">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Shortcut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>New File</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>N</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Open File</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>O</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Save File</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>S</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Undo</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Redo</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>Y</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Find</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>F</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Toggle Word Wrap</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>W</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Toggle Dark Mode</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Split View</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>1</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Editor Only</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>2</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Preview Only</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>3</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Open Settings</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>,</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Zoom In</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>=</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Zoom Out</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>-</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Reset Zoom</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>0</kbd></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+            
+            <h2 id="tips">Tips & Tricks</h2>
+            
+            <h3>Optimize Your Workflow</h3>
+            <ul style="line-height: 1.6;">
+                <li style="margin-bottom: 8px;">Hover over undo/redo buttons to access your edit history</li>
+                <li style="margin-bottom: 8px;">Enable word wrap for better readability of long lines</li>
+                <li style="margin-bottom: 8px;">Use the Find & Replace dialog for bulk text operations</li>
+                <li style="margin-bottom: 8px;">Toggle between split, editor-only, and preview-only modes with Ctrl+1/2/3</li>
+                <li style="margin-bottom: 8px;">Enable image auto-resize to keep your document responsive</li>
+                <li style="margin-bottom: 8px;">Configure auto-save in settings to never lose your work</li>
+                <li style="margin-bottom: 8px;">Use the comprehensive table dropdown for advanced table operations</li>
+                <li style="margin-bottom: 8px;">Export your settings to backup preferences across devices</li>
+                <li style="margin-bottom: 8px;">Use Save As for custom file names and Print for formatted output</li>
+                <li style="margin-bottom: 8px;">Use zoom controls (Ctrl +/-/0) to adjust text size for better readability</li>
+                <li style="margin-bottom: 8px;">Access the modern settings interface with Ctrl+, for comprehensive configuration</li>
+                <li style="margin-bottom: 8px;">Choose between Light, Dark, or Auto themes in the General settings section</li>
+                <li style="margin-bottom: 8px;">Clear search history from the Data & Privacy section in settings</li>
+            </ul>
+            
+        </main>
+    </div>
+</body>
+</html>
