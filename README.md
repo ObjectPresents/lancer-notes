@@ -6,6 +6,8 @@ Project completed by 100% solo with moderate use of AI, templates and inspriatio
 Any feedbacks can go to: objectpresents.bsky.social (Bluesky) or lightingperson_2763@outlook.com.vn
 
 ## Changelogs:
+### v2.2.4 (19/12/2025)
+Final update in 2025, major rewrite on how image resizing work using ML, simplifed theme toggle.
 #### v2.2.3 (27/11/2025)
 Fixed theme dialog auto-opening on page load.
 #### v2.1 (23/10/2025)
