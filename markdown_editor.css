@@ -1,51 +1,133 @@
 #theme-dialog {
-    z-index: 140000 !important;
+    background: white;
+    border: 1px solid #ccc;
 }
 
-.theme-dialog-body {
-    padding: 28px 32px 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-    background: rgba(248, 250, 252, 0.96);
-    font-family: 'Inter', system-ui, sans-serif;
-    color: #0f172a;
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: auto;
+body.dark-mode #theme-dialog {
+    background: #1e1e1e;
+    border-color: #444;
+    color: #e0e0e0;
 }
 
-.theme-dialog-grid {
-    display: flex;
-    gap: 40px;
-    align-items: stretch;
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: auto;
+body.dark-mode #theme-dialog input[type="radio"],
+body.dark-mode #theme-dialog input[type="checkbox"] {
+    accent-color: #0078d4;
 }
 
-.theme-options-column {
-    flex: 0 0 280px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    min-height: 0;
-    overflow-y: auto;
+body.dark-mode #theme-dialog label {
+    color: #e0e0e0;
 }
 
-.theme-preview-column {
-    flex: 1 1 auto;
-    display: flex;
-    min-width: 0;
-    min-height: 0;
-    overflow: auto;
+body.dark-mode #theme-dialog button {
+    background: #23272a;
+    color: #e0e0e0;
+    border-color: #444;
 }
 
-.theme-dialog-heading {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: #0f172a;
+body.dark-mode #theme-dialog #theme-dialog-apply {
+    background: #0078d4;
+    border-color: #0078d4;
+}
+
+body.dark-mode #theme-dialog button:hover {
+    background: #2d3136;
+}
+
+/* Hide old theme dialog components */
+.theme-dialog-body,
+.theme-dialog-grid,
+.theme-options-column,
+.theme-preview-column,
+.theme-dialog-heading,
+.settings-toggle,
+.settings-toggle input[type="checkbox"],
+.settings-toggle .toggle-track,
+.settings-toggle .toggle-track .toggle-thumb,
+.settings-toggle:hover .toggle-track,
+.settings-toggle input[type="checkbox"]:focus-visible + .toggle-track,
+.settings-toggle input[type="checkbox"]:checked + .toggle-track,
+.settings-toggle input[type="checkbox"]:checked + .toggle-track .toggle-thumb,
+.settings-toggle input[type="checkbox"][disabled] + .toggle-track,
+.settings-toggle input[type="checkbox"][disabled] + .toggle-track .toggle-thumb,
+body.dark-mode .settings-toggle .toggle-track,
+body.dark-mode .settings-toggle input[type="checkbox"]:checked + .toggle-track,
+body.dark-mode .settings-toggle .toggle-track .toggle-thumb,
+body.dark-mode .settings-toggle input[type="checkbox"]:checked + .toggle-track .toggle-thumb,
+.theme-option-grid,
+.theme-swatch,
+.theme-swatch input,
+.theme-swatch:hover,
+.theme-squircle,
+.theme-squircle::before,
+.theme-squircle::after,
+.theme-squircle-auto::before,
+.theme-squircle-auto::after,
+.theme-squircle-light::before,
+.theme-squircle-light::after,
+.theme-squircle-dark::before,
+.theme-squircle-dark::after,
+.theme-squircle-check,
+.theme-swatch input:checked + .theme-squircle,
+.theme-swatch input:checked + .theme-squircle .theme-squircle-check,
+.theme-swatch input:focus-visible + .theme-squircle,
+.theme-swatch-name,
+.theme-swatch-desc,
+.theme-compact-checkbox,
+.theme-compact-checkbox:hover,
+.theme-compact-checkbox input[type="checkbox"],
+.theme-compact-checkbox input[type="checkbox"]:focus-visible,
+.theme-compact-copy,
+.theme-compact-title,
+.theme-compact-desc,
+.theme-preview-area,
+.theme-preview-header,
+.theme-preview-title,
+.theme-preview-subtitle,
+.theme-preview-hint,
+.theme-preview-shell,
+.theme-preview-shell.theme-preview-dark,
+.theme-preview-toolbar,
+.theme-preview-shell.theme-preview-dark .theme-preview-toolbar,
+.theme-preview-window-controls,
+.theme-preview-dot,
+.theme-preview-dot.red,
+.theme-preview-dot.amber,
+.theme-preview-dot.green,
+.theme-preview-shell.theme-preview-dark .theme-preview-dot.red,
+.theme-preview-shell.theme-preview-dark .theme-preview-dot.amber,
+.theme-preview-shell.theme-preview-dark .theme-preview-dot.green,
+.theme-preview-tabs,
+.theme-preview-tab,
+.theme-preview-tab.active,
+.theme-preview-shell.theme-preview-dark .theme-preview-tabs,
+.theme-preview-shell.theme-preview-dark .theme-preview-tab,
+.theme-preview-shell.theme-preview-dark .theme-preview-tab.active,
+.theme-preview-icon,
+.theme-preview-shell.theme-preview-dark .theme-preview-icon,
+.theme-preview-body,
+.theme-preview-pane,
+.theme-preview-shell.theme-preview-compact .theme-preview-pane,
+.theme-preview-line,
+.theme-preview-line.heading,
+.theme-preview-line.medium,
+.theme-preview-line.long,
+.theme-preview-line.short,
+.theme-preview-shell.theme-preview-dark .theme-preview-line,
+.theme-preview-shell.theme-preview-dark .theme-preview-line.heading,
+.theme-preview-card,
+.theme-preview-card-heading,
+.theme-preview-card-line,
+.theme-preview-card-line.narrow,
+.theme-preview-card-chip-row,
+.theme-preview-chip,
+.theme-preview-shell.theme-preview-dark .theme-preview-card,
+.theme-preview-shell.theme-preview-dark .theme-preview-card-heading,
+.theme-preview-shell.theme-preview-dark .theme-preview-card-line,
+.theme-preview-shell.theme-preview-dark .theme-preview-chip,
+.theme-preview-shell.theme-preview-compact .theme-preview-card,
+.theme-preview-shell.theme-preview-compact .theme-preview-card-chip-row,
+.theme-preview-shell.theme-preview-compact .theme-preview-chip {
+    display: none !important;
 }
 
 .settings-toggle {
